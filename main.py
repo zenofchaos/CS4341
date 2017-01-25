@@ -41,6 +41,6 @@ print (goalNode.parent,goalNode.xPos,goalNode.yPos,goalNode.cost)
 #----------------------------------------------------------------------------
 
 #init the open list
-
+openList = {}
 #while (len.openList != 0)
     
