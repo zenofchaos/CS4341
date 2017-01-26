@@ -46,27 +46,34 @@ class Node:
         return (self.f_cost >= toCheck.f_cost)
 
     def calcH(self,goalNode):
-
-        return 1
-
+        vertDif = abs(goalNode.yPos - self.yPos)
+        horizDif = abs(goalNode.xPos - self.xPos)
+        
         if (goalNode == None):
             return 0
         else:
+            # Heuristic 1: 0
             if(HEURISTIC == 1):
-                print ()
+                return 0
+            # Heuristic 2: Min(vertical, horizontal)
             elif(HEURISTIC == 2):
-                print ()
+                return min(vertDif, horizDif)
+            # Heuristic 3: Max(vertical, horizontal)
             elif(HEURISTIC == 3):
-                print ()
+                return max(vertDif, horizDif)
+            # Heuristic 4: vertical + horizontal
             elif(HEURISTIC == 4):
-                print ()
+                return (vertDif + horizDif)
+            # Heuristic 5: vertical + horizontal + turns required
             elif(HEURISTIC == 5):
-                print ()
+                return (vertDif + horizDif + calcTurns(calcDir(self), self, goalNode))
+            # Heuristic 6: Heuristic 5 * 3
             elif(HEURISTIC == 6):
-                print ()
+                return ((vertDif + horizDif + calcTurns(calcDir(self), self, goalNode))*3)
             else:
                 print("Error in calcH: Heuristic outside of [1,6]")
                 return -1
+
     def calcG():
         return
         #somewhere in here we need calcDir()
@@ -112,6 +119,33 @@ class Node:
             return 2 * arr[self.parent.yPos][self.parent.xPos] / 3
 
 
+    def calcTurns(dirFacing, self, goalNode):
+
+        # First, fill an array with the 1-2 directions the robot
+        # needs to head towards in order to reach the goal
+        dirToGoal = []
+        # If the node has a smaller y-value than the goal, one of the directions to face is South
+        if (self.yPos < goalNode.yPos):
+            direction.append(3)
+        # If the node has a greater y-value than the goal, one of the directions to face is North
+        if (self.yPos > goalNode.yPos):
+            direction.append(1)
+        # If the node has a smaller x-value than the goal, one of the directions to face is East
+        if (self.xPos < goalNode.xPos):
+            direction.append(2)
+        # If the node has a greater x-value than the goal, one of the directions to face is West
+        if (self.xPos > goalNode.xPos):
+            direction.append(4)
+
+        # Fill an array with the difference in facing-direction and desired-directions
+        dirDif = [abs(dirFacing-item) for item in dirToGoal]
+
+        # Return minimum number of turns needed to arrive at the goal
+        if (max(dirDif) == 3):      # If 3, return 1 because it means it's
+            return (1/3)                # going from West to North or vice versa
+        else:
+            return (max(dirDif)/3)
+    
 #----------------------------------------------------------------------------
 # Create the argument parser.
 parser = argparse.ArgumentParser(description="Read in a map and run A* on it.")
