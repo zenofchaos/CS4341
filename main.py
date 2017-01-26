@@ -13,9 +13,25 @@ class Node:
         self.yPos = y
         self.g_cost = g
         self.h_cost = self.calcH(goalNode)
+        self.f_cost = 32767
 
-    def equals(self,toCheck):
+    def __eq__(self,toCheck):
         return ((self.xPos == toCheck.xPos) and (self.yPos == toCheck.yPos))
+
+    def __lt__(self,toCheck):
+        return (self.f_cost < toCheck.f_cost)
+
+    def __le__(self,toCheck):
+        return (self.f_cost <= toCheck.f_cost)
+
+    def __ne__(self,toCheck):
+        return (self.f_cost != toCheck.f_cost)
+
+    def __gt__(self,toCheck):
+        return (self.f_cost > toCheck.f_cost)
+
+    def __ge__(self,toCheck):
+        return (self.f_cost >= toCheck.f_cost)
 
     def calcH(self,goalNode):
         if (goalNode == None):
@@ -36,6 +52,9 @@ class Node:
             else:
                 print("Error in calcH: Heuristic outside of [1,6]")
                 return -1
+    def calcG():
+        return
+        #somewhere in here we need calcDir()
     
 #----------------------------------------------------------------------------
 # Create the argument parser.
@@ -72,19 +91,32 @@ print (goalNode.parent,goalNode.xPos,goalNode.yPos,goalNode.g_cost)
 #----------------------------------------------------------------------------
 
 #init the open list
-openList = [startNode]
+openList = [goalNode,startNode]
 closedList = []
 
-##while (len.openList != 0):
-##    #get the lowest cost node (last in list)
-##    toExpand = openList.pop()
-##    neighbors = toExpand.getNeighbors()
-##
-##    for k in range(0,len(neighbors)):
-##        if (neighbors[k].equals(goalNode)):
-##            path = createPath(neighbors[k])
-##            printResults(path)
-##            return
-        
+while (len(openList) != 0):
+    #get the lowest cost node (last in list)
+    toExpand = openList.pop(0)
+    if (toExpand == goalNode):
+            path = createPath(toExpand)
+            printResults(path)
+            return
+    neighbors = toExpand.getNeighbors(toExpand)
 
+    for k in range(0,len(neighbors)):
+        neighbors[k].calcG()
+        f_cost = neighbors[k].g_cost + neighbors[k].h_cost
 
+        if (neighbors[k] in openList):
+            prev = openList.index(neighbors[k])
+            if (neighbors[k].f_cost < openList[prev].f_cost):
+                openList[prev] = neighbors[k]
+        elif (neighbors[k] in closedList):
+            prev = closedList.index(neighbors[k])
+            if (neighbors[k].f_cost < closedList[prev].f_cost):
+                closedList[prev] = neighbors[k]
+        else:
+            openList.append(neighbors[k])
+            openList.sort()
+
+    closedList.append(toExpand)
