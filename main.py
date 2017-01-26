@@ -75,60 +75,68 @@ class Node:
 
     #returns a list of the valid neighbors of this node
     #assumes this node has valid x and y positions
-    def getNeighbors(boardArray,goal):
+    def getNeighbors(self,boardArray,goal):
         neighbors = []
 
-        neighborX
-        neighborY
-
+        print("Self: ",self.xPos,self.yPos)
         #neighbor south
         neighborX = self.xPos
         neighborY = self.yPos + 1
-        if((neighborY < len(boardArray)) and (boardArray[neighborY][neighborX] != '#')):
-            #The neighbor is valid, so add it to the list
-            neighbors.append(Node(self,neighborsX,neighborsY,32767,goal))
+        if(neighborY < len(boardArray)):
+            if(boardArray[neighborY][neighborX] != '#'):
+                #The neighbor is valid, so add it to the list
+                neighbors.append(Node(self,neighborX,neighborY,32767,goal))
         #neighbor north
         neighborX = self.xPos
         neighborY = self.yPos - 1
-        if((neighborY < len(boardArray)) and (boardArray[neighborY][neighborX] != '#')):
-            #The neighbor is valid, so add it to the list
-            neighbors.append(Node(self,neighborsX,neighborsY,32767,goal))
+        if(neighborY >= 0):
+            if(boardArray[neighborY][neighborX] != '#'):
+                #The neighbor is valid, so add it to the list
+                neighbors.append(Node(self,neighborX,neighborY,32767,goal))
         #neighbor west
         neighborX = self.xPos - 1
         neighborY = self.yPos
-        if((neighborY < len(boardArray)) and (boardArray[neighborY][neighborX] != '#')):
-            #The neighbor is valid, so add it to the list
-            neighbors.append(Node(self,neighborsX,neighborsY,32767,goal))
+        if(neighborX >= 0):
+            if (boardArray[neighborY][neighborX] != '#'):
+                #The neighbor is valid, so add it to the list
+                neighbors.append(Node(self,neighborX,neighborY,32767,goal))
         #neighbor east
         neighborX = self.xPos + 1
         neighborY = self.yPos
-        if((neighborY < len(boardArray)) and (boardArray[neighborY][neighborX] != '#')):
-            #The neighbor is valid, so add it to the list
-            neighbors.append(Node(self,neighborsX,neighborsY,32767,goal))
+        if(neighborX < len(boardArray[neighborY])):
+            if(boardArray[neighborY][neighborX] != '#'):
+                #The neighbor is valid, so add it to the list
+                neighbors.append(Node(self,neighborX,neighborY,32767,goal))
         #leap north
         neighborX = self.xPos
         neighborY = self.yPos - 3
-        if((neighborY < len(boardArray)) and (boardArray[neighborY][neighborX] != '#')):
-            #The neighbor is valid, so add it to the list
-            neighbors.append(Node(self,neighborsX,neighborsY,32767,goal))
+        if(neighborY >= 0):
+            if(boardArray[neighborY][neighborX] != '#'):
+                #The neighbor is valid, so add it to the list
+                neighbors.append(Node(self,neighborX,neighborY,32767,goal))
         #leap south
         neighborX = self.xPos
         neighborY = self.yPos + 3
-        if((neighborY < len(boardArray)) and (boardArray[neighborY][neighborX] != '#')):
-            #The neighbor is valid, so add it to the list
-            neighbors.append(Node(self,neighborsX,neighborsY,32767,goal))
+        if(neighborY < len(boardArray)):
+            if(boardArray[neighborY][neighborX] != '#'):
+                #The neighbor is valid, so add it to the list
+                neighbors.append(Node(self,neighborX,neighborY,32767,goal))
         #leap west
         neighborX = self.xPos - 3
         neighborY = self.yPos
-        if((neighborY < len(boardArray)) and (boardArray[neighborY][neighborX] != '#')):
-            #The neighbor is valid, so add it to the list
-            neighbors.append(Node(self,neighborsX,neighborsY,32767,goal))
+        if(neighborX >= 0):
+            if(boardArray[neighborY][neighborX] != '#'):
+                #The neighbor is valid, so add it to the list
+                neighbors.append(Node(self,neighborX,neighborY,32767,goal))
         #leap right
         neighborX = self.xPos + 3
         neighborY = self.yPos
-        if((neighborY < len(boardArray)) and (boardArray[neighborY][neighborX] != '#')):
-            #The neighbor is valid, so add it to the list
-            neighbors.append(Node(self,neighborsX,neighborsY,32767,goal))
+        if(neighborX < len(boardArray[neighborY])):
+            if(boardArray[neighborY][neighborX] != '#'):
+                #The neighbor is valid, so add it to the list
+                neighbors.append(Node(self,neighborX,neighborY,32767,goal))
+
+        return neighbors
 
     def calcDir(self):
 
