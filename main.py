@@ -72,6 +72,7 @@ class Node:
         return
         #somewhere in here we need calcDir()
 
+
     #returns a list of the valid neighbors of this node
     #assumes this node has valid x and y positions
     def getNeighbors(boardArray,goal):
@@ -128,7 +129,7 @@ class Node:
         if((neighborY < len(boardArray)) and (boardArray[neighborY][neighborX] != '#')):
             #The neighbor is valid, so add it to the list
             neighbors.append(Node(self,neighborsX,neighborsY,32767,goal))
-            
+#----------------------------------------------------------------------------
     def calcDir(self):
 
         # First, determine the starting direction.
@@ -215,34 +216,6 @@ for i in range(0, len(arr)):
 openList = [startNode]
 closedList = []
 
-<<<<<<< HEAD
-while (len(openList) != 0):
-    #get the lowest cost node (last in list)
-    toExpand = openList.pop(0)
-    if (toExpand == goalNode):
-            path = createPath(toExpand)
-            printResults(path)
-            return
-    neighbors = toExpand.getNeighbors(arr,goalNode)
-
-    for k in range(0,len(neighbors)):
-        neighbors[k].calcG()
-        f_cost = neighbors[k].g_cost + neighbors[k].h_cost
-
-        if (neighbors[k] in openList):
-            prev = openList.index(neighbors[k])
-            if (neighbors[k].f_cost < openList[prev].f_cost):
-                openList[prev] = neighbors[k]
-        elif (neighbors[k] in closedList):
-            prev = closedList.index(neighbors[k])
-            if (neighbors[k].f_cost < closedList[prev].f_cost):
-                closedList[prev] = neighbors[k]
-        else:
-            openList.append(neighbors[k])
-            openList.sort()
-
-    closedList.append(toExpand)
-=======
 # while (len(openList) != 0):
 #     #get the lowest cost node (last in list)
 #     toExpand = openList.pop(0)
@@ -269,4 +242,3 @@ while (len(openList) != 0):
 #             openList.sort()
 
 #     closedList.append(toExpand)
->>>>>>> master
