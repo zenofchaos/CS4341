@@ -55,6 +55,54 @@ class Node:
     def calcG():
         return
         #somewhere in here we need calcDir()
+
+    def calcDir():
+
+    	# First, determine the starting direction.
+    	# Guide to directions. North is 1, East is 2, South is 3, and West is 4.
+    	# If the parent of this node's parent is None, then it's the start. Starting direction is north.
+    	if (self.parent.parent == None):
+    		startDir = 1
+    	# If the parent has a smaller y-value that its parent, then the direction is north.
+    	elif (self.parent.yPos < self.parent.parent.yPos):
+    		startDir = 1
+		# If the parent has a larger x-value that its parent, then the direction is east.
+    	elif (self.parent.xPos > self.parent.parent.xPos):
+    		startDir = 2
+		# If the parent has a larger y-value that its parent, then the direction is south.
+    	elif (self.parent.yPos > self.parent.parent.yPos):
+    		startDir = 3
+    	# If the parent has a smaller x-value that its parent, then the direction is west.
+    	elif (self.parent.xPos < self.parent.parent.xPos):
+    		startDir = 4
+
+    	# Next determine the ending direction.
+    	# If the node has a smaller y-value that its parent, then the direction is north.
+    	elif (self.yPos < self.parent.yPos):
+    		endDir = 1
+		# If the node has a larger x-value that its parent, then the direction is east.
+    	elif (self.xPos > self.parent.xPos):
+    		endDir = 2
+		# If the node has a larger y-value that its parent, then the direction is south.
+    	elif (self.yPos > self.parent.yPos):
+    		endDir = 3
+    	# If the node has a smaller x-value that its parent, then the direction is west.
+    	elif (self.xPos < self.parent.xPos):
+    		endDir = 4
+
+    	# Now determine the cost accosiated with the turn.
+    	# If they're the same direction, there's no turn cost.
+    	turn = abs(startDir - endDir)
+
+    	# The directions were the same, no turn.
+    	if (turn == 0):
+    		return 0
+    	# The directions resulted in a 90 degree turn.
+   		elif (turn % 2 == 1):
+   			return arr[self.parent.yPos][self.parent.xPos] / 3
+   		else:
+   			return 2 * arr[self.parent.yPos][self.parent.xPos] / 3
+
     
 #----------------------------------------------------------------------------
 # Create the argument parser.
