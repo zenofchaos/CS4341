@@ -46,12 +46,13 @@ class Node:
         return (self.f_cost >= toCheck.f_cost)
 
     def calcH(self,goalNode):
-        vertDif = abs(goalNode.yPos - self.yPos)
-        horizDif = abs(goalNode.xPos - self.xPos)
-        
         if (goalNode == None):
             return 0
         else:
+
+            vertDif = abs(goalNode.yPos - self.yPos)
+            horizDif = abs(goalNode.xPos - self.xPos)
+
             # Heuristic 1: 0
             if(HEURISTIC == 1):
                 return 0
@@ -191,16 +192,16 @@ class Node:
         dirToGoal = []
         # If the node has a smaller y-value than the goal, one of the directions to face is South
         if (self.yPos < goalNode.yPos):
-            direction.append(3)
+            dirToGoal.append(3)
         # If the node has a greater y-value than the goal, one of the directions to face is North
         if (self.yPos > goalNode.yPos):
-            direction.append(1)
+            dirToGoal.append(1)
         # If the node has a smaller x-value than the goal, one of the directions to face is East
         if (self.xPos < goalNode.xPos):
-            direction.append(2)
+            dirToGoal.append(2)
         # If the node has a greater x-value than the goal, one of the directions to face is West
         if (self.xPos > goalNode.xPos):
-            direction.append(4)
+            dirToGoal.append(4)
 
         # Fill an array with the difference in facing-direction and desired-directions
         dirDif = [abs(dirFacing-item) for item in dirToGoal]
