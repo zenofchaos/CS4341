@@ -129,7 +129,7 @@ class Node:
         if((neighborY < len(boardArray)) and (boardArray[neighborY][neighborX] != '#')):
             #The neighbor is valid, so add it to the list
             neighbors.append(Node(self,neighborsX,neighborsY,32767,goal))
-#----------------------------------------------------------------------------
+
     def calcDir(self):
 
         # First, determine the starting direction.
