@@ -52,10 +52,68 @@ class Node:
             else:
                 print("Error in calcH: Heuristic outside of [1,6]")
                 return -1
+
     def calcG():
         return
         #somewhere in here we need calcDir()
-    
+
+    #returns a list of the valid neighbors of this node
+    #assumes this node has valid x and y positions
+    def getNeighbors(boardArray,goal):
+        neighbors = []
+
+        neighborX
+        neighborY
+
+        #neighbor south
+        neighborX = self.xPos
+        neighborY = self.yPos + 1
+        if((neighborY < len(boardArray)) and (boardArray[neighborY][neighborX] != '#')):
+            #The neighbor is valid, so add it to the list
+            neighbors.append(Node(self,neighborsX,neighborsY,32767,goal))
+        #neighbor north
+        neighborX = self.xPos
+        neighborY = self.yPos - 1
+        if((neighborY < len(boardArray)) and (boardArray[neighborY][neighborX] != '#')):
+            #The neighbor is valid, so add it to the list
+            neighbors.append(Node(self,neighborsX,neighborsY,32767,goal))
+        #neighbor west
+        neighborX = self.xPos - 1
+        neighborY = self.yPos
+        if((neighborY < len(boardArray)) and (boardArray[neighborY][neighborX] != '#')):
+            #The neighbor is valid, so add it to the list
+            neighbors.append(Node(self,neighborsX,neighborsY,32767,goal))
+        #neighbor east
+        neighborX = self.xPos + 1
+        neighborY = self.yPos
+        if((neighborY < len(boardArray)) and (boardArray[neighborY][neighborX] != '#')):
+            #The neighbor is valid, so add it to the list
+            neighbors.append(Node(self,neighborsX,neighborsY,32767,goal))
+        #leap north
+        neighborX = self.xPos
+        neighborY = self.yPos - 3
+        if((neighborY < len(boardArray)) and (boardArray[neighborY][neighborX] != '#')):
+            #The neighbor is valid, so add it to the list
+            neighbors.append(Node(self,neighborsX,neighborsY,32767,goal))
+        #leap south
+        neighborX = self.xPos
+        neighborY = self.yPos + 3
+        if((neighborY < len(boardArray)) and (boardArray[neighborY][neighborX] != '#')):
+            #The neighbor is valid, so add it to the list
+            neighbors.append(Node(self,neighborsX,neighborsY,32767,goal))
+        #leap west
+        neighborX = self.xPos - 3
+        neighborY = self.yPos
+        if((neighborY < len(boardArray)) and (boardArray[neighborY][neighborX] != '#')):
+            #The neighbor is valid, so add it to the list
+            neighbors.append(Node(self,neighborsX,neighborsY,32767,goal))
+        #leap right
+        neighborX = self.xPos + 3
+        neighborY = self.yPos
+        if((neighborY < len(boardArray)) and (boardArray[neighborY][neighborX] != '#')):
+            #The neighbor is valid, so add it to the list
+            neighbors.append(Node(self,neighborsX,neighborsY,32767,goal))
+            
 #----------------------------------------------------------------------------
 # Create the argument parser.
 parser = argparse.ArgumentParser(description="Read in a map and run A* on it.")
@@ -89,7 +147,6 @@ for i in range(0, len(arr)):
 
 print (goalNode.parent,goalNode.xPos,goalNode.yPos,goalNode.g_cost)
 #----------------------------------------------------------------------------
-
 #init the open list
 openList = [goalNode,startNode]
 closedList = []
@@ -101,7 +158,7 @@ while (len(openList) != 0):
             path = createPath(toExpand)
             printResults(path)
             return
-    neighbors = toExpand.getNeighbors(toExpand)
+    neighbors = toExpand.getNeighbors(arr,goalNode)
 
     for k in range(0,len(neighbors)):
         neighbors[k].calcG()
