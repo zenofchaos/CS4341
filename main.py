@@ -73,40 +73,32 @@ class Node:
 
     def calcDir(self):
 
-        # First, determine the starting direction.
-        # Guide to directions. North is 1, East is 2, South is 3, and West is 4.
-        # If the parent of this node's parent is None, then it's the start. Starting direction is north.
-        if (self.parent.parent == None):
-            startDir = 1
-            print ("Grandparent is start.")
-        # If the parent has a smaller y-value that its parent, then the direction is north.
-        elif (self.parent.yPos < self.parent.parent.yPos):
-            startDir = 1
-        # If the parent has a larger x-value that its parent, then the direction is east.
-        elif (self.parent.xPos > self.parent.parent.xPos):
-            startDir = 2
-        # If the parent has a larger y-value that its parent, then the direction is south.
-        elif (self.parent.yPos > self.parent.parent.yPos):
-            startDir = 3
-        # If the parent has a smaller x-value that its parent, then the direction is west.
-        elif (self.parent.xPos < self.parent.parent.xPos):
-            startDir = 4
-
         # Next determine the ending direction.
+         # If the parent of this node's parent is None, then it's the start. Starting direction is north.
+        if (self.parent == None):
+            direction = 1
         # If the node has a smaller y-value that its parent, then the direction is north.
-        if (self.yPos < self.parent.yPos):
-            endDir = 1
+        elif (self.yPos < self.parent.yPos):
+            direction = 1
         # If the node has a larger x-value that its parent, then the direction is east.
         elif (self.xPos > self.parent.xPos):
-            endDir = 2
+            direction = 2
         # If the node has a larger y-value that its parent, then the direction is south.
         elif (self.yPos > self.parent.yPos):
-            endDir = 3
+            direction = 3
         # If the node has a smaller x-value that its parent, then the direction is west.
         elif (self.xPos < self.parent.xPos):
-            endDir = 4
+            direction = 4
+        return direction
 
-        # Now determine the cost accosiated with the turn.
+        
+    def turnCost(self):
+
+        # Runs calcDir() to find the starting direction and ending direction.
+        startDir = self.parent.calcDir()
+        endDir = self.calcDir()
+
+        # Calculates the cost of a turn based on the directions provided.
         # If they're the same direction, there's no turn cost.
         turn = abs(startDir - endDir)
 
@@ -118,6 +110,7 @@ class Node:
             return arr[self.parent.yPos][self.parent.xPos] / 3
         else:
             return 2 * arr[self.parent.yPos][self.parent.xPos] / 3
+
 
 #----------------------------------------------------------------------------
 # Create the argument parser.
