@@ -143,7 +143,7 @@ class Node:
     def calcDir(self):
 
         # Next determine the ending direction.
-         # If the parent of this node's parent is None, then it's the start. Starting direction is north.
+        # If the parent of this node's parent is None, then it's the start. Starting direction is north.
         if (self.parent == None):
             direction = 1
         # If the node has a smaller y-value that its parent, then the direction is north.
@@ -163,8 +163,12 @@ class Node:
         
     def turnCost(self):
 
-        # Runs calcDir() to find the starting direction and ending direction.
-        startDir = self.parent.calcDir()
+        # If the parent of this node's parent is None, then it's the start. Starting direction is north.
+        if (self.parent == None):
+            startDir = 1
+        else:	
+            # Runs calcDir() to find the starting direction and ending direction.
+            startDir = self.parent.calcDir()
         endDir = self.calcDir()
 
         # Calculates the cost of a turn based on the directions provided.
@@ -213,15 +217,25 @@ class Node:
         return (max(dirDif)/3)
 
     def calcG(self):
+
+    	# Store the difference bettwen the vertical and horizontal positions.
         vert = abs(self.parent.yPos - self.yPos)
         hor = abs(self.parent.xPos - self.xPos)
 		
-        if(vert >= 3 or hor >= 3):
-            return (g + 20 + cost)
-		
-		
+		# Calculate the turn cost and store it.
         cost = self.parent.turnCost();
-        g = g + parent.g + cost
+
+        # Store g as a large number, in case of invalid nodes.
+        g = 10000
+
+        # If the move is a leap, calculate with that in mind. 20 for leap + turn cost + parent's g cost.
+        if(vert >= 3 or hor >= 3):
+            g = (self.parent.g_cost + 20 + cost)
+		
+        # If the move is normal, calculate the normal g cost. Terrain cost + turn cost + parent's g cost.
+        print ("\nTerrain cost: ",arr[self.yPos][self.xPos], "\nParent G Cost: ", self.parent.g_cost, "\nTurn Cost: ", cost)
+        g = arr[self.yPos][self.xPos] + self.parent.g_cost + cost
+        
         return g
 #----------------------------------------------------------------------------
 def createPath(currentNode):
