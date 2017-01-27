@@ -14,7 +14,7 @@ parser.add_argument("length", help="Length of the file. Minimum 2, maximum 100."
 args = parser.parse_args()
 
 # List of all possible terrain types. (Double chance for each number when compared to a wall.
-terrain = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "1", "2", "3", "4", "5", "6", "7", "8", "9", "#"]
+terrain = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "#", "#", "#", "#"]
 
 # Empty map.
 map = []
