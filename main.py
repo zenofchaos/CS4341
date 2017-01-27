@@ -75,10 +75,17 @@ class Node:
                 print("Error in calcH: Heuristic outside of [1,6]")
                 return -1
 
-    def calcG():
-        return
-        #somewhere in here we need calcDir()
-
+    def calcG(self):
+		vert = abs(self.parent.yPos - self.yPos)
+		hor = abs(self.parent.xPos - self.xPos)
+		
+		if(vert >= 3 or hor >= 3)
+			return (g + 20 + cost)
+		
+		
+		cost = turnCost(self.parent);
+			g = g + parent.g + cost
+        return g
 
     #returns a list of the valid neighbors of this node
     #assumes this node has valid x and y positions
