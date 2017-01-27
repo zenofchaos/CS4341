@@ -75,18 +75,6 @@ class Node:
                 print("Error in calcH: Heuristic outside of [1,6]")
                 return -1
 
-    def calcG(self):
-		vert = abs(self.parent.yPos - self.yPos)
-		hor = abs(self.parent.xPos - self.xPos)
-		
-		if(vert >= 3 or hor >= 3)
-			return (g + 20 + cost)
-		
-		
-		cost = turnCost(self.parent);
-			g = g + parent.g + cost
-        return g
-
     #returns a list of the valid neighbors of this node
     #assumes this node has valid x and y positions
     def getNeighbors(self,boardArray,goal):
@@ -223,7 +211,18 @@ class Node:
         # Return minimum number of turns needed to arrive at the goal
         print(max(dirDif)/3)
         return (max(dirDif)/3)
-    
+
+    def calcG(self):
+        vert = abs(self.parent.yPos - self.yPos)
+        hor = abs(self.parent.xPos - self.xPos)
+		
+        if(vert >= 3 or hor >= 3):
+            return (g + 20 + cost)
+		
+		
+        cost = self.parent.turnCost();
+        g = g + parent.g + cost
+        return g
 #----------------------------------------------------------------------------
 def createPath(currentNode):
     path = []
@@ -274,30 +273,30 @@ for i in range(0, len(arr)):
 openList = [startNode]
 closedList = []
 
-# while (len(openList) != 0):
-#     #get the lowest cost node (last in list)
-#     toExpand = openList.pop(0)
-#     if (toExpand == goalNode):
-#             path = createPath(toExpand)
-#             printResults(path)
-#             return
-#     neighbors = toExpand.getNeighbors(toExpand)
+while (len(openList) != 0):
+    #get the lowest cost node (last in list)
+    toExpand = openList.pop(0)
+    if (toExpand == goalNode):
+        path = createPath(toExpand)
+        printResults(path)
+        break
+    neighbors = toExpand.getNeighbors(arr,goalNode)
 
-#     for k in range(0,len(neighbors)):
-#         neighbors[k].calcG()
-#         f_cost = neighbors[k].g_cost + neighbors[k].h_cost
+    for k in range(0,len(neighbors)):
+        neighbors[k].calcG()
+        f_cost = neighbors[k].g_cost + neighbors[k].h_cost
 
-#         if (neighbors[k] in openList):
-#             prev = openList.index(neighbors[k])
-#             if (neighbors[k].f_cost < openList[prev].f_cost):
-#                 openList[prev] = neighbors[k]
-#         elif (neighbors[k] in closedList):
-#             prev = closedList.index(neighbors[k])
-#             if (neighbors[k].f_cost < closedList[prev].f_cost):
-#                 closedList[prev] = neighbors[k]
-#         else:
-#             openList.append(neighbors[k])
-#             openList.sort()
+        if (neighbors[k] in openList):
+            prev = openList.index(neighbors[k])
+            if (neighbors[k].f_cost < openList[prev].f_cost):
+                openList[prev] = neighbors[k]
+        elif (neighbors[k] in closedList):
+            prev = closedList.index(neighbors[k])
+            if (neighbors[k].f_cost < closedList[prev].f_cost):
+                closedList[prev] = neighbors[k]
+        else:
+            openList.append(neighbors[k])
+            openList.sort()
 
-#     closedList.append(toExpand)
-# print("Path not found")
+    closedList.append(toExpand)
+print("Path not found")
