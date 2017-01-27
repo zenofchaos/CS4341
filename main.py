@@ -225,6 +225,18 @@ class Node:
         return (max(dirDif)/3)
     
 #----------------------------------------------------------------------------
+def createPath(currentNode):
+    path = []
+    while(currentNode.parent != None):
+        path.append(currentNode)
+        currentNode = currentNode.parent
+    return path.reverse()
+#----------------------------------------------------------------------------
+def printResults(path):
+    while(not path):
+        print("xPos: ",path[0].xPos," yPos: ",path[0].yPos)
+        path.pop(0)
+#----------------------------------------------------------------------------
 # Create the argument parser.
 parser = argparse.ArgumentParser(description="Read in a map and run A* on it.")
 
@@ -257,7 +269,6 @@ for i in range(0,len(arr)):
 
 for i in range(0, len(arr)):
     print (arr[i])
-
 #----------------------------------------------------------------------------
 #init the open list
 openList = [startNode]
@@ -289,3 +300,4 @@ closedList = []
 #             openList.sort()
 
 #     closedList.append(toExpand)
+# print("Path not found")
