@@ -70,10 +70,10 @@ class Node:
                 return (vertDif + horizDif)
             # Heuristic 5: vertical + horizontal + turns required
             elif(HEURISTIC == 5):
-                return (vertDif + horizDif + calcTurns(calcDir(), goalNode))
+                return (vertDif + horizDif + self.calcTurns(self.calcDir(), goalNode))
             # Heuristic 6: Heuristic 5 * 3
             elif(HEURISTIC == 6):
-                return ((vertDif + horizDif + calcTurns(calcDir(), goalNode))*3)
+                return ((vertDif + horizDif + self.calcTurns(self.calcDir(), goalNode))*3)
             else:
                 print("Error in calcH: Heuristic outside of [1,6]")
                 return -1
@@ -231,11 +231,15 @@ class Node:
             if item == 3:
                 item = 1
                 dirDif[idx] = item
-            print(dirDif)
+            if (args.debug):
+                print(dirDif)
      
         # Return minimum number of turns needed to arrive at the goal
-        print(max(dirDif)/3)
-        return (max(dirDif)/3)
+        if dirDif:
+            if (args.debug):
+                print(max(dirDif)/3)
+            return (max(dirDif)/3)
+        return 0
 
     def calcG(self):
 
