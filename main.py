@@ -259,9 +259,9 @@ class Node:
         # If the move is a leap, calculate with that in mind. 20 for leap + turn cost + parent's g cost.
         if(vert >= 3 or hor >= 3):
             g = (self.parent.g_cost + 20 + cost)
-        
-        # If the move is normal, calculate the normal g cost. Terrain cost + turn cost + parent's g cost.
-        g = arr[self.yPos][self.xPos] + self.parent.g_cost + cost
+        else:
+            # If the move is normal, calculate the normal g cost. Terrain cost + turn cost + parent's g cost.
+            g = arr[self.yPos][self.xPos] + self.parent.g_cost + cost
 
         if (args.debug):
             print ("The g_cost of Node (",self.yPos,",",self.xPos,") is",g,"time.")
