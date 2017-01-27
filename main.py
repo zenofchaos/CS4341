@@ -361,15 +361,12 @@ def printResults(path):
     print("Nodes Expanded:",len(closedList))
 
     # Then, print the estimated branching factor.
-    print("Estimated Branching Factor:")
+    print("Estimated Branching Factor:",len(closedList)**(1/len(path)))
 
     # Finally, print the series of actions.
+    print("\nActions Taken:")
     for i in range(0,len(actionList)):
         print (actionList[i])
-
-    while(path):
-        print("yPos:",path[0].yPos,"xPos:",path[0].xPos)
-        path.pop(0)
 #----------------------------------------------------------------------------
 # Create the argument parser.
 parser = argparse.ArgumentParser(description="Read in a map and run A* on it.")
@@ -438,7 +435,7 @@ while (len(openList) != 0):
 
     for k in range(0,len(neighbors)):
         neighbors[k].calcG()
-        f_cost = neighbors[k].g_cost + neighbors[k].h_cost
+        neighbors[k].f_cost = neighbors[k].g_cost + neighbors[k].h_cost
 
         if (neighbors[k] in openList):
             prev = openList.index(neighbors[k])
