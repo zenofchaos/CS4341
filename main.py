@@ -67,10 +67,10 @@ class Node:
                 return (vertDif + horizDif)
             # Heuristic 5: vertical + horizontal + turns required
             elif(HEURISTIC == 5):
-                return (vertDif + horizDif + calcTurns(calcDir(self), self, goalNode))
+                return (vertDif + horizDif + calcTurns(calcDir(), goalNode))
             # Heuristic 6: Heuristic 5 * 3
             elif(HEURISTIC == 6):
-                return ((vertDif + horizDif + calcTurns(calcDir(self), self, goalNode))*3)
+                return ((vertDif + horizDif + calcTurns(calcDir(), goalNode))*3)
             else:
                 print("Error in calcH: Heuristic outside of [1,6]")
                 return -1
@@ -192,7 +192,7 @@ class Node:
         else:
             return 2 * arr[self.parent.yPos][self.parent.xPos] / 3
 
-    def calcTurns(dirFacing, self, goalNode):
+    def calcTurns(self, dirFacing, goalNode):
 
         # First, fill an array with the 1-2 directions the robot
         # needs to head towards in order to reach the goal
@@ -213,11 +213,17 @@ class Node:
         # Fill an array with the difference in facing-direction and desired-directions
         dirDif = [abs(dirFacing-item) for item in dirToGoal]
 
+        # If 3, change to 1 because it means it's going from West to North or vice versa
+        for idx,item in enumerate(dirDif):
+            if item == 3:
+                item = 1
+                dirDif[idx] = item
+            print(dirDif)
+     
         # Return minimum number of turns needed to arrive at the goal
-        if (max(dirDif) == 3):      # If 3, return 1 because it means it's
-            return (1/3)                # going from West to North or vice versa
-        else:
-            return (max(dirDif)/3)
+        print(max(dirDif)/3)
+        return (max(dirDif)/3)
+    
 #----------------------------------------------------------------------------
 # Create the argument parser.
 parser = argparse.ArgumentParser(description="Read in a map and run A* on it.")
