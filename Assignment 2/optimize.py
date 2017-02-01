@@ -1,23 +1,26 @@
 # Imports
 import argparse
 import random
+import time
 
 # Global Constants
 PRIME_LIST = [3, 5, 7]
 COMPOSITE_LIST = [0, 1, 2, 4, 6, 8, 9]
+PRINT = True
+
 
 # Bin scoring function.
-def scoreBins(add_sub_bin, position_bin, prime_bin):
+def scoreBins(args, add_sub_bin, position_bin, prime_bin, toPrint):
 
 	# Notify the user where they are in the code, if they're debugging.
 	if (args.debug):
 		print("\nRunning the scoring system.")
-
+	
 	# Calculate the first bin's score.
-	add_sub_score = add_subb_bin[0]
-	for i in range (1, len(add_subb_bin)):
-		add_sub_score += (-(-1) ** i) * add_subb_bin[i]
-	print ("Bin #1 Score:", add_sub_score)
+	add_sub_score = add_sub_bin[0]
+	for i in range (1, len(add_sub_bin)):
+		add_sub_score += (-(-1) ** i) * add_sub_bin[i]
+	
 
 	# Calculate the second bin's score.
 	position_score = 0
@@ -28,7 +31,7 @@ def scoreBins(add_sub_bin, position_bin, prime_bin):
 			position_score += 5
 		else:
 			position_score -= 10
-	print ("Bin #2 Score:", position_score)
+	
 
 	# Calculate the third bin's score.
 	prime_score = 0
@@ -58,13 +61,66 @@ def scoreBins(add_sub_bin, position_bin, prime_bin):
 				prime_score += prime_bin[i]
 			else:
 				prime_score += 2
-	print ("Bin #3 Score:", prime_score)
-
-
-
+	if toPrint:			
+		print ("Bin #1 Score:", add_sub_score)
+		print ("Bin #2 Score:", position_score)
+		print ("Bin #3 Score:", prime_score)
+		print("Total score:", prime_score + position_score + add_sub_score)
+		print("add sub:", add_sub_bin)
+		print('position:', position_bin)
+		print('prime:', prime_bin)
+		
 	# Program success.
-	return 0
+	return prime_score + position_score + add_sub_score
 
+
+# First hill climbing method
+
+def firstClimb(score):
+	round = 0
+	topScore = score
+	START = time.time()
+	
+	
+	while(round < 100 and time.time() - START <= args.time):
+		binChoice1 = random.randint(0,len(arr)-1)
+		binChoice2 = random.randint(0,len(arr)-1)
+		
+		if(PRINT):
+			print('Top score is',topScore,'round is ', round)
+		
+		if(binChoice1 == binChoice2):
+			if(binChoice2 == 0):
+				binChoice2 += 1
+			else:
+				binChoice2 -= 1
+		
+		if(PRINT):
+			print('bin choices 1 and 2', binChoice1,binChoice2)
+	
+		arr[binChoice1],arr[binChoice2] = arr[binChoice2],arr[binChoice1]
+		
+		add_sub_bin = arr[0:len(arr)//3]
+		position_bin = arr[len(arr)//3: 2*len(arr)//3]
+		prime_bin = arr[2*len(arr)//3:len(arr)]
+
+		newScore = scoreBins(args, add_sub_bin,position_bin,prime_bin,PRINT)
+		
+		if(topScore >= newScore):
+			arr[binChoice2],arr[binChoice1] = arr[binChoice1],arr[binChoice2]
+			round += 1
+		else:
+			round = 0
+			topScore = newScore
+		
+	print("add sub:", add_sub_bin)
+	print('position:', position_bin)
+	print('prime:', prime_bin)
+	return topScore
+		
+	
+	
+	
 # Create the argument parser.
 parser = argparse.ArgumentParser(description="Reads in a list of intergers between [-9,9], splits them into bins, sorts them as well as possible, and scores them.")
 
@@ -85,13 +141,13 @@ if (args.debug):
 # Open the file and store the integers in a single array.
 with open(args.ints) as f:
 
-    arr = []
+	arr = []
 
-    for line in f:
-    	line = line.split(" ")
+	for line in f:
+		line = line.split(" ")
 
-    for i in range(0, len(line)):
-    	arr.append(int(line[i]))
+	for i in range(0, len(line)):
+		arr.append(int(line[i]))
 
 # Print the newly imported list.
 if (args.debug):
@@ -105,13 +161,15 @@ if (args.debug):
 	print (arr)
 
 # Split the now random list.
-add_subb_bin = arr[0:len(arr)//3]
+add_sub_bin = arr[0:len(arr)//3]
 position_bin = arr[len(arr)//3: 2*len(arr)//3]
 prime_bin = arr[2*len(arr)//3:len(arr)]
 
 # Print the new lists.
 if (args.debug):
-	print (add_subb_bin,position_bin,prime_bin)
+	print (add_sub_bin,position_bin,prime_bin)
 
 # Run the scoring system.
-scoreBins(add_subb_bin, position_bin, prime_bin)
+score = scoreBins(args, add_sub_bin, position_bin, prime_bin, PRINT)
+firstClimb(score)
+print(arr)
