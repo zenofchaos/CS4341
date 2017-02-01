@@ -27,6 +27,17 @@ def getNumNums(arr):
                 numCount[i] = count
         return numCount
 
+#Returns a weighted random Member from a population
+def weighted_choice(population):
+    total = sum(Member.score for Member in population)
+    r = random.uniform(0, total)
+    upto = 0
+    for Member in population:
+        if upto + Member.score >= r:
+            return Member
+        upto += Member.score
+    assert False, "Shouldn't get here"
+
 #Runs a genetic algorithm on the given bins to maximize
 #the score returned by scoreBins
 #       Parameter: arr - an array of input integers in [-9,9] to be sorted
@@ -36,7 +47,7 @@ def geneticAlg(args,arr):
 
         #generate a list of the number of each number in arr
         #will be used to determine if a member is valid
-        nuNums = getNumNums(arr)
+        numNums = getNumNums(arr)
         
         #initialize the populations
         presentPop = []
