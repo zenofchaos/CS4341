@@ -28,6 +28,13 @@ def getNumNums(arr):
         return numCount
 
 #Returns a weighted random Member from a population
+################################################
+#    Title: A weighted version of random.choice
+#    Author: Ned Batchelder
+#    Date: 11/9/2010
+#    Code version: Python 
+#    Availability: http://stackoverflow.com/questions/3679694/a-weighted-version-of-random-choice
+################################################
 def weighted_choice(population):
     total = sum(Member.score for Member in population)
     r = random.uniform(0, total)
