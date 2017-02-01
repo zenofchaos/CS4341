@@ -1,22 +1,23 @@
 # Imports
 import argparse
 import random
+import genetic
 
 # Global Constants
 PRIME_LIST = [3, 5, 7]
 COMPOSITE_LIST = [0, 1, 2, 4, 6, 8, 9]
 
 # Bin scoring function.
-def scoreBins(add_sub_bin, position_bin, prime_bin):
+def scoreBins(args,add_sub_bin, position_bin, prime_bin):
 
 	# Notify the user where they are in the code, if they're debugging.
 	if (args.debug):
 		print("\nRunning the scoring system.")
 
 	# Calculate the first bin's score.
-	add_sub_score = add_subb_bin[0]
-	for i in range (1, len(add_subb_bin)):
-		add_sub_score += (-(-1) ** i) * add_subb_bin[i]
+	add_sub_score = add_sub_bin[0]
+	for i in range (1, len(add_sub_bin)):
+		add_sub_score += (-(-1) ** i) * add_sub_bin[i]
 	print ("Bin #1 Score:", add_sub_score)
 
 	# Calculate the second bin's score.
@@ -108,15 +109,17 @@ if __name__ == "__main__":
                 print (arr)
 
         # Split the now random list.
-        add_subb_bin = arr[0:len(arr)//3]
+        add_sub_bin = arr[0:len(arr)//3]
         position_bin = arr[len(arr)//3: 2*len(arr)//3]
         prime_bin = arr[2*len(arr)//3:len(arr)]
 
         # Print the new lists.
         if (args.debug):
-                print (add_subb_bin,position_bin,prime_bin)
+                print (add_sub_bin,position_bin,prime_bin)
 
         # Run the scoring system.
-        scoreBins(add_subb_bin, position_bin, prime_bin)
+        scoreBins(args,add_sub_bin, position_bin, prime_bin)
+
+        genetic.geneticAlg(args,arr)
 
 #end if(__name__...)
