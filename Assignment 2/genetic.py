@@ -49,7 +49,7 @@ def weighted_choice(population):
 #the score returned by scoreBins
 #       Parameter: arr - an array of input integers in [-9,9] to be sorted
 def geneticAlg(args,arr):
-        if(ards.debug):
+        if(args.debug):
                 print("In genetic alg")
 
         #generate a list of the number of each number in arr
