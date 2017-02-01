@@ -18,7 +18,7 @@ class Member():
                 self.score = optimize.scoreBins(args, self.add_sub_bin, self.position_bin, self.prime_bin)
 
         def __eq__(self,toCheck):
-                return (self.score == toCheck.score)
+                return (self.arr == toCheck.arr)
         
         def __lt__(self,toCheck):
                 return (self.score < toCheck.score)
@@ -83,15 +83,16 @@ def geneticAlg(args,arr):
         numElites = int(POP_SIZE * ELITISM_DECIMAL)
         for j in range(0,numElites):
                 futurePop[j] = presentPop[j]
-        
-        #generate probabilities - TODO
 
         numNewMembers = 0
         #for (POP_SIZE - #elites) iterations
         while (numNewMembers < (POP_SIZE - numElites)):
                 #select two members - TODO
-                firstMember = RANDOMMEMBER
-                secondMember = RANDOMMEMBER
+                firstMember = weighted_choice(presentPop)
+                secondMember = weighted_choice(presentPop)
+                while (secondMember == firstMember):
+                        secondMember = weighted_choice(presentPop)
+                        
                 #add random cut and form new members
                 cutLine = random.randint(1,len(arr)-1)
                 mem1FirstHalf = firstMember.arr[0:cutLine]
