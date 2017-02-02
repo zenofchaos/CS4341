@@ -3,7 +3,7 @@ import annealing
 import argparse
 import random
 import time
-import genetic
+#import genetic
 import hill
 
 # Global Constants
@@ -115,15 +115,14 @@ if __name__ == "__main__":
 
 		# Print the new lists.
 		if (args.debug):
-
 			# Print the starting bins and their scores.
 			print (add_sub_bin,position_bin,prime_bin)
 			scoreBins(args,add_sub_bin, position_bin, prime_bin, True)
 
 		if (args.search == "hill"):
 			hill.firstClimb(args, arr, scoreBins(args,add_sub_bin, position_bin, prime_bin, False))
-                if (args.search == "ga"):
-                        genetic.geneticAlg(args,arr)
+		if (args.search == "ga"):
+			genetic.geneticAlg(args,arr)
 		if (args.search == "annealing"):
 			annealing.annealClimb(args, arr, scoreBins(args,add_sub_bin, position_bin, prime_bin, False))
 
