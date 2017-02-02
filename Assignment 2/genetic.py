@@ -94,7 +94,8 @@ def geneticAlg(args,arr):
         numNewMembers = 0
         #for (POP_SIZE - #elites) iterations
         while (numNewMembers < (POP_SIZE - numElites)):
-                #select two members - TODO
+
+                #select two members 
                 firstMember = weighted_choice(presentPop)
                 secondMember = weighted_choice(presentPop)
                 while (secondMember == firstMember):
@@ -107,8 +108,8 @@ def geneticAlg(args,arr):
                 mem2FirstHalf = secondMember.arr[0:cutLine]
                 mem2SecondHalf = secondMember.arr[cutLine,len(firstMember.arr)]
 
-                newMem1 = Member(args,mem1FirstHalf + Mem2SecondHalf)
-                newMem2 = Member(args,mem1FirstHalf + Mem2SecondHalf)
+                newMem1 = Member(args,mem1FirstHalf + mem2SecondHalf)
+                newMem2 = Member(args,mem1FirstHalf + mem2SecondHalf)
 
                 #if valid member
                 mem1NumNums = getNumNums(newMem1.arr)
