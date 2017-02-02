@@ -8,6 +8,8 @@ POP_SIZE = 100
 ELITISM_DECIMAL = 0.1
 MUTATION_DECIMAL = 0.01
 
+VALUES_ARRAY = []
+
 class Member():
 
         def __init__(self,args,arr):
@@ -37,11 +39,17 @@ class Member():
 
         #Calculates the score of this member
         def calcScore(self,args,to_print):
-                arrOfValues = #TODO - Convert to array of values
-        
-                add_sub_bin = arrOfValues[0:len(arrOfValues)//3]
-                position_bin = arrOfValues[len(arrOfValues)//3: 2*len(arrOfValues)//3]
-                prime_bin = arrOfValues[2*len(arrOfValues)//3:len(arrOfValues)]
+                #Convert the positions in arr to values
+                arrValues = []
+                for i in range(0,len(arr)):
+                        arrValues[i] = VALUES_ARRAY[arr[i]]
+
+                #Split the array into the 3 bins
+                add_sub_bin = arrValues[0:len(arrValues)//3]
+                position_bin = arrValues[len(arrValues)//3: 2*len(arrValues)//3]
+                prime_bin = arrValues[2*len(arrValues)//3:len(arrValues)]
+
+                #calculate the score of the bins
                 optimize.scoreBins(args, add_sub_bin, position_bin, prime_bin,False)
 
         #mutates this member based on the mutation chance MUTATION_DECIMAL
@@ -68,8 +76,22 @@ def weighted_choice(population):
 
 #returns the given member with invalid components changed to make them valid
 def makeValid(member)
-        #TODO - fill in function
-
+        toAdd = []
+        toRemoveIndex = [][]
+        toRemoveValue = []
+        for i in range(0,len(member.arr)):
+                if (i in member.arr):
+                        #check if double counted
+                        if (member.arr.count(i) > 1):
+                                toRemoveValue.append(i)
+                                firstIndex = member.arr.index(i)
+                                secondIndex = member.arr.index(i,firstIndex + 1)
+                                indexList = [firstIndex,secondIndex]
+                                toRemoveIndex.append(indexList)
+                        #end if(member.arr.count(i)...)
+                else:
+                        toAdd.append(i)
+        #end for i...
 
 #Runs a genetic algorithm on the given bins to maximize
 #the score returned by scoreBins
@@ -78,8 +100,8 @@ def geneticAlg(args,arr):
         if(args.debug):
                 print("In genetic alg")
 
-        #generate a hash table of 0 -> arr[0]
-        #TODO
+        #save array values to be used later
+        VALUES_ARRAY = arr
 
         #convert arr to an array of positions
         for h in range(0,len(arr)):
@@ -94,7 +116,8 @@ def geneticAlg(args,arr):
                 presentPop.append(Member(args,random.shuffle(arr)))
 
         #sort the population so the best fit members are at the lowest index
-        arr.sort() #TODO - will this work? is the syntax right?
+        arr.sort()
+        arr.reverse()
         
         #save elites - assumes presentPop is sorted most fit to least fit
         numElites = int(POP_SIZE * ELITISM_DECIMAL)
@@ -107,13 +130,13 @@ def geneticAlg(args,arr):
         numNewMembers = 0
         #for (POP_SIZE - #elites) iterations
         while (numNewMembers < (POP_SIZE - numElites)):
-
-                #select two members 
+                #select two members
                 firstMember = weighted_choice(presentPop)
                 secondMember = weighted_choice(presentPop)
                 while (secondMember == firstMember):
                         secondMember = weighted_choice(presentPop)
-                        
+                #create a random cutline
+                cutline = random.randint(1,len(firstMember.arr) - 1)
                 #add random cut and form new members
                 mem1FirstHalf = firstMember.arr[0:cutLine]
                 mem1SecondHalf = firstMember.arr[cutLine:len(firstMember.arr)]
