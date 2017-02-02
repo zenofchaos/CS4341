@@ -122,6 +122,8 @@ if __name__ == "__main__":
 
 		if (args.search == "hill"):
 			hill.firstClimb(args, arr, scoreBins(args,add_sub_bin, position_bin, prime_bin, False))
+                if (args.search == "ga"):
+                        genetic.geneticAlg(args,arr)
 		if (args.search == "annealing"):
 			annealing.annealClimb(args, arr, scoreBins(args,add_sub_bin, position_bin, prime_bin, False))
 

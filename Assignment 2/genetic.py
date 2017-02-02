@@ -11,11 +11,8 @@ MUTATION_DECIMAL = 0.01
 class Member():
 
         def __init__(self,args,arr):
-                self.arr = arr
-                self.add_sub_bin = arr[0:len(arr)//3]
-                self.position_bin = arr[len(arr)//3: 2*len(arr)//3]
-                self.prime_bin = arr[2*len(arr)//3:len(arr)]
-                self.score = optimize.scoreBins(args, self.add_sub_bin, self.position_bin, self.prime_bin)
+                self.arr = convertToValues(arr)
+                self.score = self.calcScore(args,False)
 
         def __eq__(self,toCheck):
                 return (self.arr == toCheck.arr)
@@ -38,16 +35,18 @@ class Member():
         def __str__(self):
                 return "Array: " + str(self.arr) + " Score: " + str(self.score)
 
-#Returns the count of each number [-9,9] in the given array
-def getNumNums(arr):
-        numCount = []
-        for i in range(-9,10):
-                count = 0;
-                for j in range(0,len(arr)):
-                        if i == arr[j]:
-                                count += 1
-                numCount[i] = count
-        return numCount
+        #Calculates the score of this member
+        def calcScore(self,args,to_print):
+                arrOfValues = #TODO - Convert to array of values
+        
+                add_sub_bin = arrOfValues[0:len(arrOfValues)//3]
+                position_bin = arrOfValues[len(arrOfValues)//3: 2*len(arrOfValues)//3]
+                prime_bin = arrOfValues[2*len(arrOfValues)//3:len(arrOfValues)]
+                optimize.scoreBins(args, add_sub_bin, position_bin, prime_bin,False)
+
+        #mutates this member based on the mutation chance MUTATION_DECIMAL
+        def mutate(self,args):
+                return self
 
 #Returns a weighted random Member from a population
 def weighted_choice(population):
@@ -60,6 +59,11 @@ def weighted_choice(population):
         upto += Member.score
     assert False, "Shouldn't get here"
 
+#returns the given member with invalid components changed to make them valid
+def makeValid(member)
+        #TODO - fill in function
+
+
 #Runs a genetic algorithm on the given bins to maximize
 #the score returned by scoreBins
 #       Parameter: arr - an array of input integers in [-9,9] to be sorted
@@ -67,9 +71,12 @@ def geneticAlg(args,arr):
         if(args.debug):
                 print("In genetic alg")
 
-        #generate a list of the number of each number in arr
-        #will be used to determine if a member is valid
-        validNumNums = getNumNums(arr)
+        #generate a hash table of 0 -> arr[0]
+        #TODO
+
+        #convert arr to an array of positions
+        for h in range(0,len(arr)):
+                arr[i] = i
         
         #initialize the populations
         presentPop = []
@@ -78,12 +85,18 @@ def geneticAlg(args,arr):
         #fill the initial population
         for i in range(0,POP_SIZE):
                 presentPop.append(Member(args,random.shuffle(arr)))
-                
+
+        #sort the population so the best fit members are at the lowest index
+        arr.sort() #TODO - will this work? is the syntax right?
+        
         #save elites - assumes presentPop is sorted most fit to least fit
         numElites = int(POP_SIZE * ELITISM_DECIMAL)
         for j in range(0,numElites):
                 futurePop[j] = presentPop[j]
 
+        #TODO: Currently only iterates once, generating 1 new population from the original and stopping
+        #       Need to add another loop that is linked with a timer
+        
         numNewMembers = 0
         #for (POP_SIZE - #elites) iterations
         while (numNewMembers < (POP_SIZE - numElites)):
@@ -94,7 +107,6 @@ def geneticAlg(args,arr):
                         secondMember = weighted_choice(presentPop)
                         
                 #add random cut and form new members
-                cutLine = random.randint(1,len(arr)-1)
                 mem1FirstHalf = firstMember.arr[0:cutLine]
                 mem1SecondHalf = firstMember.arr[cutLine:len(firstMember.arr)]
                 mem2FirstHalf = secondMember.arr[0:cutLine]
@@ -103,20 +115,17 @@ def geneticAlg(args,arr):
                 newMem1 = Member(args,mem1FirstHalf + Mem2SecondHalf)
                 newMem2 = Member(args,mem1FirstHalf + Mem2SecondHalf)
 
-                #if valid member
-                mem1NumNums = getNumNums(newMem1.arr)
-                if (mem1NumNums == validNumNums):
-                        #implement mutation (randomly switch two numbers)
-                        if (random.random() <= MUTATION_DECIMAL):
-                                newMem1.mutate()
-                        #add to new population
-                        futurePop.append(newMem1)
-                        numNewMembers += 1
-                if (mem2NumNums == validNumNums):
-                        #implement mutation (randomly switch two numbers)
-                        if (random.random() <= MUTATION_DECIMAL):
-                                newMem1.mutate()
-                        #add to new population
-                        futurePop.append(newMem1)
-                        numNewMembers += 1
+                #convert to a valid member if it's not
+                newMem1 = makeValid(newMem1)
+                newMem2 = makeValie(newMem1)
+                
+                #implement mutation
+                newMem1.mutate(args)
+                newMem2.mutate(args)
+                
+                #add to new population
+                futurePop.append(newMem1)
+                futurePop.append(newMem1)
+                numNewMembers += 2
+        #end while(numNewMembers...)
 
