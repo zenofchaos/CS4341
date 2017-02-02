@@ -8,6 +8,7 @@ def firstClimb(args, arr, score):
 	iteration = 0
 	topScore = score
 	START = time.time()
+	tempbin1,tempbin2,tempbin3 = [],[],[]
 	
 	
 	while(round <= 100 and time.time() - START <= args.time):
@@ -35,7 +36,10 @@ def firstClimb(args, arr, score):
 		else:
 			if (args.debug):
 				print ("Top score of",topScore,"was beat by",newScore,"on round",round,"of iteration",iteration)
-
+			
+			tempbin1 = add_sub_bin
+			tempbin2 = position_bin
+			tempbin3 = prime_bin
 			round = 0
 			topScore = newScore
 
@@ -45,8 +49,14 @@ def firstClimb(args, arr, score):
 			iteration += 1
 		
 	print ("\nFinal Hil Climbing Results:")
-	print ("Bin #1:", add_sub_bin)
-	print ("Bin #2:", position_bin)
-	print ("Bin #3:", prime_bin)
+	if(iteration > 0):
+		print ("Bin #1:", tempbin1)
+		print ("Bin #2:", tempbin2)
+		print ("Bin #3:", tempbin3)
+	else:
+		print("Bin #1:", add_sub_bin)
+		print ("Bin #2:", position_bin)
+		print ("Bin #3:", prime_bin)
 	print ("Final Score:", topScore)
+	print ("Iteration is:", iteration)
 	return topScore
