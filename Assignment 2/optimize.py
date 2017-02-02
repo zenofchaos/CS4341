@@ -1,4 +1,5 @@
 # Imports
+import annealing
 import argparse
 import random
 import time
@@ -121,6 +122,9 @@ if __name__ == "__main__":
 
 		if (args.search == "hill"):
 			hill.firstClimb(args, arr, scoreBins(args,add_sub_bin, position_bin, prime_bin, False))
-                else if (args.search == "ga"):
+                if (args.search == "ga"):
                         genetic.geneticAlg(args,arr)
+		if (args.search == "annealing"):
+			annealing.annealClimb(args, arr, scoreBins(args,add_sub_bin, position_bin, prime_bin, False))
+
 #end if(__name__...)
