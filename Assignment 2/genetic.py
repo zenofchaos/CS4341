@@ -2,18 +2,21 @@
 import random
 import optimize
 import time
+import copy
 
 #Calibration settings for GA search
-POP_SIZE = 10
+POP_SIZE = 100
 ELITISM_DECIMAL = 0.1
 MUTATION_DECIMAL = 0.01
-GENERATIONS = 3
+GENERATIONS = 100
+COUNTER = 100
 
 class Member():
 
         def __init__(self,args,arr):
                 self.arr = arr
                 self.score = self.calcScore(args,False)
+                self.args = args
 
         def __eq__(self,toCheck):
                 return (self.arr == toCheck.arr)
@@ -41,15 +44,16 @@ class Member():
                 #Convert the positions in arr to values
                 arrValues = []
                 for i in range(0,len(self.arr)):
-                        arrValues.append(VALUES_ARRAY[self.arr[i]])
+                        a = self.arr[i]
+                        b = VALUES_ARRAY[a]
+                        arrValues.append(b)
 
                 #Split the array into the 3 bins
                 add_sub_bin = arrValues[0:len(arrValues)//3]
                 position_bin = arrValues[len(arrValues)//3: 2*len(arrValues)//3]
                 prime_bin = arrValues[2*len(arrValues)//3:len(arrValues)]
-
                 #calculate the score of the bins
-                return optimize.scoreBins(args, add_sub_bin, position_bin, prime_bin,False)
+                return optimize.scoreBins(args, add_sub_bin, position_bin, prime_bin, to_print)
 
         #mutates this member based on the mutation chance MUTATION_DECIMAL
         def mutate(self,args):
@@ -66,18 +70,22 @@ class Member():
 
                 self.arr[toSwap1],self.arr[toSwap2] = self.arr[toSwap2],self.arr[toSwap1]
 
+                #recalculate score
+                self.score = self.calcScore(self.args, False)
+                
+
         #alters the given member such that invalid components are replaced with valid components
-        def makeValid(member):
+        def makeValid(self):
                 toAdd = []
                 toRemoveIndex = []
                 toRemoveValue = []
-                for i in range(0,len(member.arr)):
-                        if (i in member.arr):
+                for i in range(0,len(self.arr)):
+                        if (i in self.arr):
                                 #check if double counted
-                                if (member.arr.count(i) > 1):
+                                if (self.arr.count(i) > 1):
                                         toRemoveValue.append(i)
-                                        firstIndex = member.arr.index(i)
-                                        secondIndex = member.arr.index(i,firstIndex + 1)
+                                        firstIndex = self.arr.index(i)
+                                        secondIndex = self.arr.index(i,firstIndex + 1)
                                         indexList = [firstIndex,secondIndex]
                                         toRemoveIndex.append(indexList)
                                 #end if(member.arr.count(i)...)
@@ -92,12 +100,15 @@ class Member():
                         numToAdd = random.randint(0,len(toAdd) - 1)
 
                         #do the replacement
-                        member.arr[toRemoveIndex[numToReplace][indexToReplace]] = toAdd[numToAdd]
+                        self.arr[toRemoveIndex[numToReplace][indexToReplace]] = toAdd[numToAdd]
 
                         #adjust toAdd, toRemoveIndex, and toRemoveValue to reflect the previous step
                         trash = toAdd.pop(numToAdd)
                         trash = toRemoveValue.pop(numToReplace)
                         trash = toRemoveIndex.pop(numToReplace)
+
+                #recalculate score
+                self.score = self.calcScore(self.args, False)
                 #end while(toAdd)
 
 #Returns a weighted random Member from a population
@@ -115,7 +126,6 @@ def weighted_choice(population):
         upto = 0
         for Member in population:
                 if ((upto + (Member.score + minScore)) >= r):
-                        print(Member)
                         return Member
                 upto += (Member.score + minScore)
         assert False, "Shouldn't get here"
@@ -126,14 +136,17 @@ def weighted_choice(population):
 def geneticAlg(args,arr):
         if(args.debug):
                 print("In genetic alg")
+                
         #save array values to be used later
         global VALUES_ARRAY
-        VALUES_ARRAY = arr
-        originalMem = Member(args, arr)
+        VALUES_ARRAY = list(arr)
+        
         
         #convert arr to an array of positions
         for h in range(0,len(arr)):
                 arr[h] = h
+
+        originalMem = Member(args, list(arr))
         
         #initialize the populations
         presentPop = []
@@ -142,9 +155,7 @@ def geneticAlg(args,arr):
         #fill the initial population
         for i in range(0,POP_SIZE):
                 random.shuffle(arr)
-                temp = []
-                for p in range(0,len(arr)):
-                        temp.append(arr[p])
+                temp = list(arr)
                 m = Member(args,temp)
                 presentPop.append(m)
 
@@ -155,57 +166,73 @@ def geneticAlg(args,arr):
         #for GENERATIONS iterations, or until the timer runs out
         # TODO possibly get rid of generations?
         while (time.time() - START <= args.time):
-                print(time.time() - START)
+                #if (args.debug):
+                print("NEW GENERATION")
+                
                 #sort the population so the best fit members are at the lowest index
                 presentPop.sort()
                 presentPop.reverse()
-
+                
                 #save elites - assumes presentPop is sorted most fit to least fit
                 numElites = int(POP_SIZE * ELITISM_DECIMAL)
                 for j in range(0,numElites):
                         futurePop.append(presentPop[j])
                         
-
-                #TODO: Currently only iterates once, generating 1 new population from the original and stopping
-                #       Need to add another loop that is linked with a timer
-
                 numNewMembers = 0
                 #for (POP_SIZE - #elites) iterations
                 while (numNewMembers < (POP_SIZE - numElites)):
-                        #if(args.debug):
-                        print("Loop")
+                        if(args.debug):
+                                print("New members")
+                                
                         #select two members
                         firstMember = weighted_choice(presentPop)
                         secondMember = weighted_choice(presentPop)
-                        while (secondMember == firstMember):
-                                secondMember = weighted_choice(presentPop)
-                                print("checking equality loop")
+                        numEqLoops = 0
+                        while (secondMember == firstMember and numEqLoops < COUNTER):
+                                if (args.debug):
+                                        print("2nd mem invalid - must choose other")
+                                secondMember = weighted_choice(presentPop)      
+                                numEqLoops += 1
+
+                        if (numEqLoops == COUNTER):
+                                #if(args.debug):
+                                print("got stuck in equality loop")
+                                break
+                                
                         if(args.debug):
                                 print("Members Chosen")
+                                
                         #create a random cutline
                         cutLine = random.randint(1,len(firstMember.arr) - 1)
+                        
                         #add random cut and form new members
-                        mem1FirstHalf = firstMember.arr[0:cutLine]
-                        mem1SecondHalf = firstMember.arr[cutLine:len(firstMember.arr)]
-                        mem2FirstHalf = secondMember.arr[0:cutLine]
-                        mem2SecondHalf = secondMember.arr[cutLine:len(firstMember.arr)]
+                        mem1FirstHalf = list(firstMember.arr[0:cutLine])
+                        mem1SecondHalf = list(firstMember.arr[cutLine:len(firstMember.arr)])
+                        mem2FirstHalf = list(secondMember.arr[0:cutLine])
+                        mem2SecondHalf = list(secondMember.arr[cutLine:len(firstMember.arr)])
 
                         newMem1 = Member(args,mem1FirstHalf + mem2SecondHalf)
                         newMem2 = Member(args,mem2FirstHalf + mem1SecondHalf)
+
                         if(args.debug):
                                 print("Members combined")
+
                         #convert to a valid member if it's not
                         newMem1.makeValid()
                         newMem2.makeValid()
                         if(args.debug):
                                 print("Members valid")
+                                
                         #implement mutation
                         if (random.random() <= MUTATION_DECIMAL):
                                 newMem1.mutate(args)
+                                if(args.debug):
+                                        print("Mutation implemented on 1")
                         if (random.random() <= MUTATION_DECIMAL):
                                 newMem2.mutate(args)
-                        if(args.debug):
-                                print("Mutation implemented")
+                                if(args.debug):
+                                        print("Mutation implemented on 2")
+
                         #add to new population
                         futurePop.append(newMem1)
                         numNewMembers += 1
@@ -217,8 +244,14 @@ def geneticAlg(args,arr):
                                 print("Members Added")
                 #end while(numNewMembers...)
 
+                #if the equality loop in the previous while loop runs 15 times
+                #it's safe to say that the best solution has been found since
+                #all population members are virtually identical
+                if (numEqLoops == COUNTER):
+                        print("Generations stagnated - best possible solution found")
+                        break
                 #reinitialize populations
-                presentPop = futurePop
+                presentPop = copy.deepcopy(futurePop)
                 futurePop = []
 
                 #increment generations
@@ -228,18 +261,18 @@ def geneticAlg(args,arr):
         #sort the population so the best fit members are at the lowest index
         presentPop.sort()
         presentPop.reverse()
-    
-
+        
         #analysis
-        print("Elitism: ", ELITISM_DECIMAL*100, "%")
-        print("Population Size: ", POP_SIZE)
-        print("Number of Generations Created: ", generationsCreated)
-        print("Original Score: ", originalMem.calcScore)
-        print("Best Score: ", presentPop[0].calcScore)          
-        for p in range(0,len(presentPop)):
-                print(presentPop[p])
-        print()
-        for p in range(0,len(futurePop)):
-                print(futurePop[p])
-        print("Exit while")
+        print("Elitism:                      ", ELITISM_DECIMAL*100, "%")
+        print("Population Size:              ", POP_SIZE)
+        print("Number of Generations Created:", generationsCreated)
+        print("Original Score:               ", originalMem.score)
+        print("Original Score:               ", originalMem.calcScore(originalMem.args, False))
+        print("Best Score:                   ", presentPop[0].score)          
+        #for p in range(0,len(presentPop)):
+        #        print(presentPop[p])
+        print("------------------------------------------------------------------------------------")
+        #print()
+        #for p in range(0,len(futurePop)):
+        #        print(futurePop[p])
 
