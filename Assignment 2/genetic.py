@@ -2,7 +2,6 @@
 import random
 import optimize
 
-
 #Calibration settings for GA search
 POP_SIZE = 100
 ELITISM_DECIMAL = 0.1
@@ -101,8 +100,9 @@ def geneticAlg(args,arr):
     if(args.debug):
         print("In genetic alg")
 
-    #save array values to be used later
+    #save array values and original array to be used later
     VALUES_ARRAY = arr
+    originalMem = Member(args,arr)
 
     #convert arr to an array of positions
     for h in range(0,len(arr)):
@@ -177,4 +177,18 @@ def geneticAlg(args,arr):
         #increment generations
         generationsCreated += 1
     #end while(generationsCreated....
+    
+    #sort the population so the best fit members are at the lowest index
+    presentPop.sort()
+    presentPop.reverse()
+    
+
+    #analysis
+    print("Elitism: ", ELITISM_DECIMAL*100, "%")
+    print("Population Size: ", POP_SIZE)
+    print("Number of Generations Created: ", generationsCreated)
+    print("Original Score: ", originalMem.calcScore)
+    print("Best Score: ", presentPop[0].calcScore)
+
+    
 
