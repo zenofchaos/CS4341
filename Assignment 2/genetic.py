@@ -7,6 +7,7 @@ import optimize
 POP_SIZE = 100
 ELITISM_DECIMAL = 0.1
 MUTATION_DECIMAL = 0.01
+GENERATIONS = 3
 
 VALUES_ARRAY = []
 
@@ -97,66 +98,83 @@ def makeValid(member)
 #the score returned by scoreBins
 #       Parameter: arr - an array of input integers in [-9,9] to be sorted
 def geneticAlg(args,arr):
-        if(args.debug):
-                print("In genetic alg")
+    if(args.debug):
+        print("In genetic alg")
 
-        #save array values to be used later
-        VALUES_ARRAY = arr
+    #save array values to be used later
+    VALUES_ARRAY = arr
 
-        #convert arr to an array of positions
-        for h in range(0,len(arr)):
-                arr[i] = i
+    #convert arr to an array of positions
+    for h in range(0,len(arr)):
+        arr[i] = i
         
-        #initialize the populations
-        presentPop = []
-        futurePop = []
+    #initialize the populations
+    presentPop = []
+    futurePop = []
 
-        #fill the initial population
-        for i in range(0,POP_SIZE):
-                presentPop.append(Member(args,random.shuffle(arr)))
+    #fill the initial population
+    for i in range(0,POP_SIZE):
+        presentPop.append(Member(args,random.shuffle(arr)))
+
+    # Start timer
+    START = time.time()
+    
+    generationsCreated = 0
+    #for GENERATIONS iterations, or until the timer runs out
+    # TODO possibly get rid of generations?
+    while (generationsCreated <= GENERATIONS and time.time() - START <= args.time):
 
         #sort the population so the best fit members are at the lowest index
-        arr.sort()
-        arr.reverse()
+        presentPop.sort()
+        presentPop.reverse()
         
         #save elites - assumes presentPop is sorted most fit to least fit
         numElites = int(POP_SIZE * ELITISM_DECIMAL)
         for j in range(0,numElites):
-                futurePop[j] = presentPop[j]
+            futurePop[j] = presentPop[j]
 
-        #TODO: Currently only iterates once, generating 1 new population from the original and stopping
-        #       Need to add another loop that is linked with a timer
-        
         numNewMembers = 0
         #for (POP_SIZE - #elites) iterations
         while (numNewMembers < (POP_SIZE - numElites)):
-                #select two members
-                firstMember = weighted_choice(presentPop)
+            if(args.debug):
+                print("Creating new members")
+
+            #select two members
+            firstMember = weighted_choice(presentPop)
+            secondMember = weighted_choice(presentPop)
+            while (secondMember == firstMember):
                 secondMember = weighted_choice(presentPop)
-                while (secondMember == firstMember):
-                        secondMember = weighted_choice(presentPop)
-                #create a random cutline
-                cutline = random.randint(1,len(firstMember.arr) - 1)
-                #add random cut and form new members
-                mem1FirstHalf = firstMember.arr[0:cutLine]
-                mem1SecondHalf = firstMember.arr[cutLine:len(firstMember.arr)]
-                mem2FirstHalf = secondMember.arr[0:cutLine]
-                mem2SecondHalf = secondMember.arr[cutLine,len(firstMember.arr)]
 
-                newMem1 = Member(args,mem1FirstHalf + mem2SecondHalf)
-                newMem2 = Member(args,mem1FirstHalf + mem2SecondHalf)
+            #create a random cutline
+            cutline = random.randint(1,len(firstMember.arr) - 1)
 
-                #convert to a valid member if it's not
-                newMem1 = makeValid(newMem1)
-                newMem2 = makeValie(newMem1)
+            #add random cut and form new members
+            mem1FirstHalf = firstMember.arr[0:cutLine]
+            mem1SecondHalf = firstMember.arr[cutLine:len(firstMember.arr)]
+            mem2FirstHalf = secondMember.arr[0:cutLine]
+            mem2SecondHalf = secondMember.arr[cutLine,len(firstMember.arr)]
+            newMem1 = Member(args,mem1FirstHalf + mem2SecondHalf)
+            newMem2 = Member(args,mem1FirstHalf + mem2SecondHalf)
+
+            #convert to a valid member if it's not
+            newMem1 = makeValid(newMem1)
+            newMem2 = makeValie(newMem1)
+            
+            #implement mutation
+            newMem1.mutate(args)
+            newMem2.mutate(args)
                 
-                #implement mutation
-                newMem1.mutate(args)
-                newMem2.mutate(args)
-                
-                #add to new population
-                futurePop.append(newMem1)
-                futurePop.append(newMem1)
-                numNewMembers += 2
+            #add to new population
+            futurePop.append(newMem1)
+            futurePop.append(newMem2)
+            numNewMembers += 2
         #end while(numNewMembers...)
+
+        #reinitialize populations
+        presentPop = futurePop
+        futurePop = []
+
+        #increment generations
+        generationsCreated += 1
+    #end while(generationsCreated....
 
