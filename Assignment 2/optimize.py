@@ -3,7 +3,7 @@ import annealing
 import argparse
 import random
 import time
-#import genetic
+import genetic
 import hill
 
 # Global Constants
