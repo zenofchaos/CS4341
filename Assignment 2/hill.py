@@ -1,4 +1,5 @@
 # Import
+import csv
 import optimize
 import random
 import time
@@ -6,6 +7,7 @@ import time
 def firstClimb(args, arr, score):
 	round = 0
 	iteration = 0
+	bestIteration = 0
 	topScore = score
 	topOverallScore = -1000000
 	START = time.time()
@@ -72,9 +74,22 @@ def firstClimb(args, arr, score):
 			# Print the start of the next iteration!
 			if (args.debug):
 				print("\nIteration",iteration,"has started!")
-	
+
 	if (args.debug):
 		print ("Iteration",iteration,"ran out of time!")
+		print ("Bin #1:", add_sub_bin)
+		print ("Bin #2:", position_bin)
+		print ("Bin #3:", prime_bin)
+		print ("Iteration Score:", topScore)
+	# Store the best overall score and its bins
+	if (topScore > topOverallScore):
+		topOverallScore = topScore
+		bestIteration = iteration
+		tempbin1 = add_sub_bin
+		tempbin2 = position_bin
+		tempbin3 = prime_bin
+
+	# Final console print.
 	print ("\nFinal Hill Climbing Results:")
 	print ("Bin #1:", tempbin1)
 	print ("Bin #2:", tempbin2)
