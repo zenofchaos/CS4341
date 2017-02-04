@@ -17,9 +17,9 @@ def probabilty(args, topScore, newScore, heat):
 		prob = math.exp((newScore - topScore - 1) / heat)
 		return prob
 
-def cooldown(args, heat):
+def cooldown(args, heat, iteration, heatTime):
 	if (heat > 0.01):
-	 	return (1 - (time.time() - START) / HEAT_VALUE)
+		return (1 - (time.time() - heatTime)/ args.time)
 	else:
 		return heat
 
@@ -34,6 +34,7 @@ def annealClimb(args, arr, score):
 	tempbin1,tempbin2,tempbin3 = [],[],[]
 	roundTotal = 0
 	scoreOverTime = []
+	heatTime = time.time()
 
 	if (args.debug):
 		print ("\nStarting Iteration:", iteration)
@@ -62,13 +63,14 @@ def annealClimb(args, arr, score):
 		# Score the move
 		newScore =optimize.scoreBins(args, add_sub_bin,position_bin,prime_bin, False)
 
-		if (len(scoreOverTime) < 1500):
+		if (len(scoreOverTime) < 1500 and not (roundTotal % 100)):
 			scoreOverTime.append(newScore)
 
 		chance = random.random()
 		if (probabilty(args, topScore, newScore, heat) > chance):
 			round = 0
 			topScore = newScore
+			roundTotal += 1
 			
 		else:
 			arr[binChoice2],arr[binChoice1] = arr[binChoice1],arr[binChoice2]
@@ -106,12 +108,13 @@ def annealClimb(args, arr, score):
 			topScore = optimize.scoreBins(args, add_sub_bin,position_bin,prime_bin, False)
 			round = 0
 			heat = HEAT_VALUE
+			heatTime = time.time()
 
 			# Print the start of the next iteration!
 			if (args.debug):
 				print("\nIteration",iteration,"has started!")
 			
-		heat = cooldown(args, heat)
+		heat = cooldown(args, heat, iteration, heatTime)
 
 	if (args.debug):
 		print ("Iteration",iteration,"ran out of time!")
@@ -130,7 +133,7 @@ def annealClimb(args, arr, score):
 	# Produce a csv file.
 	with open('some.csv', 'a', newline='') as f:
 		writer = csv.writer(f)
-		# writer.writerow(range(0,len(scoreOverTime)))
+		# writer.writerow(range(0,len(scoreOverTime) * 100, 100))
 		writer.writerow(scoreOverTime)
 
 	print ("\nFinal Simulated Annealing Results:")
