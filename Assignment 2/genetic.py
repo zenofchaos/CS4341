@@ -5,11 +5,10 @@ import time
 import copy
 
 #Calibration settings for GA search
-POP_SIZE = 100
-ELITISM_DECIMAL = 0.1
-MUTATION_DECIMAL = 0.01
-GENERATIONS = 100
-COUNTER = 100
+POP_SIZE = 150
+ELITISM_DECIMAL = 0.15
+MUTATION_DECIMAL = 0.3
+COUNTER = 50
 
 class Member():
 
@@ -153,8 +152,8 @@ def geneticAlg(args,arr):
         #for GENERATIONS iterations, or until the timer runs out
         # TODO possibly get rid of generations?
         while (time.time() - START <= args.time):
-                #if (args.debug):
-                print("NEW GENERATION")
+                if (args.debug):
+                        print("NEW GENERATION")
                 
                 #sort the population so the best fit members are at the lowest index
                 presentPop.sort()
