@@ -14,7 +14,7 @@ def probabilty(args, topScore, newScore, heat):
 	if newScore > topScore:
 		return 1.0
 	else:
-		prob = math.exp((newScore - topScore) / heat)
+		prob = math.exp((newScore - topScore - 1) / heat)
 		return prob
 
 def cooldown(args, heat, iteration, heatTime):
