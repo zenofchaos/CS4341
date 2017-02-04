@@ -7,17 +7,17 @@ import genetic
 import hill
 
 # Global Constants
-PRIME_LIST = [3, 5, 7]
-COMPOSITE_LIST = [0, 1, 2, 4, 6, 8, 9]
+PRIME_LIST = [2, 3, 5, 7]
+COMPOSITE_LIST = [0, 1, 4, 6, 8, 9]
 
 
 # Bin scoring function.
 def scoreBins(args, add_sub_bin, position_bin, prime_bin, to_print):
 	
 	# Calculate the first bin's score.
-	add_sub_score = add_sub_bin[0]
-	for i in range (1, len(add_sub_bin)):
-		add_sub_score += (-(-1) ** i) * add_sub_bin[i]
+	add_sub_score = 0
+	for i in range (0, len(add_sub_bin)):
+		add_sub_score += ((-1) ** i) * add_sub_bin[i]
 
 	# Calculate the second bin's score.
 	position_score = 0
