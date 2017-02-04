@@ -76,40 +76,27 @@ class Member():
 
         #alters the given member such that invalid components are replaced with valid components
         def makeValid(self):
-                toAdd = []
-                toRemoveIndex = []
-                toRemoveValue = []
-                for i in range(0,len(self.arr)):
-                        if (i in self.arr):
-                                #check if double counted
-                                if (self.arr.count(i) > 1):
-                                        toRemoveValue.append(i)
-                                        firstIndex = self.arr.index(i)
-                                        secondIndex = self.arr.index(i,firstIndex + 1)
-                                        indexList = [firstIndex,secondIndex]
-                                        toRemoveIndex.append(indexList)
-                                #end if(member.arr.count(i)...)
-                        else:
-                                toAdd.append(i)
-                #end for i...
+                locArr = self.arr
+                gluttons = []
+                starving = []
+                countArr = [0]*len(locArr)
+                repeatExists = False
                 
-                while(toAdd != []):
-                        #determine which number/index to replace and which number to replace it with
-                        numToReplace = random.randint(0,len(toRemoveIndex) - 1)
-                        indexToReplace = random.randint(0,1)
-                        numToAdd = random.randint(0,len(toAdd) - 1)
-
-                        #do the replacement
-                        self.arr[toRemoveIndex[numToReplace][indexToReplace]] = toAdd[numToAdd]
-
-                        #adjust toAdd, toRemoveIndex, and toRemoveValue to reflect the previous step
-                        trash = toAdd.pop(numToAdd)
-                        trash = toRemoveValue.pop(numToReplace)
-                        trash = toRemoveIndex.pop(numToReplace)
+                for i in range(0,len(locArr)):
+                        countArr[locArr[i]] += 1
+                        if (countArr[locArr[i]] == 2):
+                                repeatExists = True
+                                gluttons.append(i)
+                if (repeatExists):
+                        for j in range(0,len(locArr)):
+                                if (countArr[j] == 0):
+                                        starving.append(j)
+                        for k in range(0,len(starving)):
+                                self.arr[gluttons[k]] = starving[k]
 
                 #recalculate score
                 self.score = self.calcScore(self.args, False)
-                #end while(toAdd)
+
 
 #Returns a weighted random Member from a population
 ################################################
@@ -147,18 +134,18 @@ def geneticAlg(args,arr):
                 arr[h] = h
 
         originalMem = Member(args, list(arr))
-        
+
         #initialize the populations
         presentPop = []
         futurePop = []
-
+        
         #fill the initial population
         for i in range(0,POP_SIZE):
                 random.shuffle(arr)
                 temp = list(arr)
                 m = Member(args,temp)
                 presentPop.append(m)
-
+        
         # Start timer
         START = time.time()
     
@@ -182,7 +169,7 @@ def geneticAlg(args,arr):
                 #for (POP_SIZE - #elites) iterations
                 while (numNewMembers < (POP_SIZE - numElites)):
                         if(args.debug):
-                                print("New members")
+                                print("New members", time.time() - START)
                                 
                         #select two members
                         firstMember = weighted_choice(presentPop)
@@ -200,7 +187,7 @@ def geneticAlg(args,arr):
                                 break
                                 
                         if(args.debug):
-                                print("Members Chosen")
+                                print("Members Chosen", time.time() - START)
                                 
                         #create a random cutline
                         cutLine = random.randint(1,len(firstMember.arr) - 1)
@@ -215,13 +202,13 @@ def geneticAlg(args,arr):
                         newMem2 = Member(args,mem2FirstHalf + mem1SecondHalf)
 
                         if(args.debug):
-                                print("Members combined")
+                                print("Members combined", time.time() - START)
 
                         #convert to a valid member if it's not
                         newMem1.makeValid()
                         newMem2.makeValid()
                         if(args.debug):
-                                print("Members valid")
+                                print("Members valid", time.time() - START)
                                 
                         #implement mutation
                         if (random.random() <= MUTATION_DECIMAL):
@@ -241,7 +228,7 @@ def geneticAlg(args,arr):
                         futurePop.append(newMem2)
                         numNewMembers += 1
                         if(args.debug):
-                                print("Members Added")
+                                print("Members Added", time.time() - START)
                 #end while(numNewMembers...)
 
                 #if the equality loop in the previous while loop runs 15 times
@@ -250,8 +237,12 @@ def geneticAlg(args,arr):
                 if (numEqLoops == COUNTER):
                         print("Generations stagnated - best possible solution found")
                         break
+
+                if (args.debug):
+                        print("Reinitialize populations")
                 #reinitialize populations
-                presentPop = copy.deepcopy(futurePop)
+                for i in range(0,len(futurePop)):
+                        presentPop[i] = futurePop[i]
                 futurePop = []
 
                 #increment generations

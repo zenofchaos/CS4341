@@ -1,4 +1,5 @@
 # Import
+import csv
 import math
 import optimize
 import random
@@ -6,6 +7,7 @@ import time
 
 # Global Constants
 HEAT_VALUE = 5
+START = time.time()
 
 def probabilty(args, topScore, newScore, heat):
 
@@ -17,7 +19,7 @@ def probabilty(args, topScore, newScore, heat):
 
 def cooldown(args, heat):
 	if (heat > 0.01):
-		return (heat - 0.01)
+	 	return (1 - (time.time() - START) / HEAT_VALUE)
 	else:
 		return heat
 
@@ -28,10 +30,10 @@ def annealClimb(args, arr, score):
 	bestIteration = 0
 	topScore = score
 	topOverallScore = -1000000
-	START = time.time()
 	heat = HEAT_VALUE;
 	tempbin1,tempbin2,tempbin3 = [],[],[]
 	roundTotal = 0
+	scoreOverTime = []
 
 	if (args.debug):
 		print ("\nStarting Iteration:", iteration)
@@ -59,6 +61,9 @@ def annealClimb(args, arr, score):
 
 		# Score the move
 		newScore =optimize.scoreBins(args, add_sub_bin,position_bin,prime_bin, False)
+
+		if (len(scoreOverTime) < 1500):
+			scoreOverTime.append(newScore)
 
 		chance = random.random()
 		if (probabilty(args, topScore, newScore, heat) > chance):
@@ -121,6 +126,12 @@ def annealClimb(args, arr, score):
 		tempbin1 = add_sub_bin
 		tempbin2 = position_bin
 		tempbin3 = prime_bin
+
+	# Produce a csv file.
+	with open('some.csv', 'a', newline='') as f:
+		writer = csv.writer(f)
+		# writer.writerow(range(0,len(scoreOverTime)))
+		writer.writerow(scoreOverTime)
 
 	print ("\nFinal Simulated Annealing Results:")
 	print ("Bin #1:", tempbin1)
