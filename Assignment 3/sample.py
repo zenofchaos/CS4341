@@ -33,12 +33,9 @@ class Environment:
 			# Is the argument provided this node.
 			if (NODE_LIST[i] == arg_split[0]):
 
-				# Before storing, is this the query node?
-				if (len(arg_split) == 1):
-					if (self.query_node == None):
-						self.query_node = arg_split[0]
-					else:
-						print ("\nError: Observable node",arg_split[0],"given no value. Continuing without this node.")
+				# Error check the string.
+				if (len(arg_split) < 2):
+					print("\nError: No value given for this node.")
 					return
 
 				# Is the argument humidity?
@@ -47,6 +44,9 @@ class Environment:
 					if (arg_split[1] in ["low", "medium", "high"]):
 						if (self.humidity == None):
 							self.humidity = arg_split[1]
+							if (self.query_node == None):
+								self.query_node = arg_split[0]
+
 						else:
 							print ("\nError: Second instance of humidity found. Continuing without this node.")
 					else:
@@ -59,6 +59,8 @@ class Environment:
 					if (arg_split[1] in ["warm", "mild", "cold"]):
 						if (self.temp == None):
 							self.temp = arg_split[1]
+							if (self.query_node == None):
+								self.query_node = arg_split[0]
 						else:
 							print ("\nError: Second instance of temp found. Continuing without this node.")
 					else:
@@ -71,6 +73,8 @@ class Environment:
 					if (arg_split[1] in ["true", "false"]):
 						if (self.icy == None):
 							self.icy = arg_split[1]
+							if (self.query_node == None):
+								self.query_node = arg_split[0]
 						else:
 							print ("\nError: Second instance of icy found. Continuing without this node.")
 					else:
@@ -83,6 +87,8 @@ class Environment:
 					if (arg_split[1] in ["true", "false"]):
 						if (self.snow == None):
 							self.snow = arg_split[1]
+							if (self.query_node == None):
+								self.query_node = arg_split[0]
 						else:
 							print ("\nError: Second instance of snow found. Continuing without this node.")
 					else:
@@ -95,6 +101,8 @@ class Environment:
 					if (arg_split[1] in ["weekend", "weekday"]):
 						if (self.day == None):
 							self.day = arg_split[1]
+							if (self.query_node == None):
+								self.query_node = arg_split[0]
 						else:
 							print ("\nError: Second instance of day found. Continuing without this node.")
 					else:
@@ -107,6 +115,8 @@ class Environment:
 					if (arg_split[1] in ["true", "false"]):
 						if (self.cloudy == None):
 							self.cloudy = arg_split[1]
+							if (self.query_node == None):
+								self.query_node = arg_split[0]
 						else:
 							print ("\nError: Second instance of cloudy found. Continuing without this node.")
 					else:
@@ -119,6 +129,8 @@ class Environment:
 					if (arg_split[1] in ["true", "false"]):
 						if (self.exams == None):
 							self.exams = arg_split[1]
+							if (self.query_node == None):
+								self.query_node = arg_split[0]
 						else:
 							print ("\nError: Second instance of exams found. Continuing without this node.")
 					else:
@@ -131,6 +143,8 @@ class Environment:
 					if (arg_split[1] in ["high", "low"]):
 						if (self.stress == None):
 							self.stress = arg_split[1]
+							if (self.query_node == None):
+								self.query_node = arg_split[0]
 						else:
 							print ("\nError: Second instance of stress found. Continuing without this node.")
 					else:
@@ -165,7 +179,7 @@ if __name__ == "__main__":
 
 	# Verify the query node was set.
 	if (enviro.query_node == None):
-		print ("Error: Query node invalid. Stopping sampling.")
+		print ("\nError: Query node invalid. Stopping sampling.")
 		sys.exit()
 
 	# Store the other nodes.
