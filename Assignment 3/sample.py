@@ -1,5 +1,7 @@
 # Imports
 import argparse
+import copy
+import random
 import sys
 
 # Constants
@@ -33,12 +35,9 @@ class Environment:
 			# Is the argument provided this node.
 			if (NODE_LIST[i] == arg_split[0]):
 
-				# Before storing, is this the query node?
-				if (len(arg_split) == 1):
-					if (self.query_node == None):
-						self.query_node = arg_split[0]
-					else:
-						print ("\nError: Observable node",arg_split[0],"given no value. Continuing without this node.")
+				# Error check the string.
+				if (len(arg_split) < 2):
+					print("\nError: No value given for this node.")
 					return
 
 				# Is the argument humidity?
@@ -47,6 +46,8 @@ class Environment:
 					if (arg_split[1] in ["low", "medium", "high"]):
 						if (self.humidity == None):
 							self.humidity = arg_split[1]
+							if (self.query_node == None):
+								self.query_node = arg_split[0]
 						else:
 							print ("\nError: Second instance of humidity found. Continuing without this node.")
 					else:
@@ -59,6 +60,8 @@ class Environment:
 					if (arg_split[1] in ["warm", "mild", "cold"]):
 						if (self.temp == None):
 							self.temp = arg_split[1]
+							if (self.query_node == None):
+								self.query_node = arg_split[0]
 						else:
 							print ("\nError: Second instance of temp found. Continuing without this node.")
 					else:
@@ -71,6 +74,8 @@ class Environment:
 					if (arg_split[1] in ["true", "false"]):
 						if (self.icy == None):
 							self.icy = arg_split[1]
+							if (self.query_node == None):
+								self.query_node = arg_split[0]
 						else:
 							print ("\nError: Second instance of icy found. Continuing without this node.")
 					else:
@@ -83,6 +88,8 @@ class Environment:
 					if (arg_split[1] in ["true", "false"]):
 						if (self.snow == None):
 							self.snow = arg_split[1]
+							if (self.query_node == None):
+								self.query_node = arg_split[0]
 						else:
 							print ("\nError: Second instance of snow found. Continuing without this node.")
 					else:
@@ -95,6 +102,8 @@ class Environment:
 					if (arg_split[1] in ["weekend", "weekday"]):
 						if (self.day == None):
 							self.day = arg_split[1]
+							if (self.query_node == None):
+								self.query_node = arg_split[0]
 						else:
 							print ("\nError: Second instance of day found. Continuing without this node.")
 					else:
@@ -107,6 +116,8 @@ class Environment:
 					if (arg_split[1] in ["true", "false"]):
 						if (self.cloudy == None):
 							self.cloudy = arg_split[1]
+							if (self.query_node == None):
+								self.query_node = arg_split[0]
 						else:
 							print ("\nError: Second instance of cloudy found. Continuing without this node.")
 					else:
@@ -119,6 +130,8 @@ class Environment:
 					if (arg_split[1] in ["true", "false"]):
 						if (self.exams == None):
 							self.exams = arg_split[1]
+							if (self.query_node == None):
+								self.query_node = arg_split[0]
 						else:
 							print ("\nError: Second instance of exams found. Continuing without this node.")
 					else:
@@ -131,6 +144,8 @@ class Environment:
 					if (arg_split[1] in ["high", "low"]):
 						if (self.stress == None):
 							self.stress = arg_split[1]
+							if (self.query_node == None):
+								self.query_node = arg_split[0]
 						else:
 							print ("\nError: Second instance of stress found. Continuing without this node.")
 					else:
@@ -141,6 +156,34 @@ class Environment:
 		print("\nError:", arg_split[0],"is not a valid node. Continuing without this node.")
 		return 
 
+# Humidity helper function.
+def humidityRandomChance():
+	choice = random.random()
+	if(choice < .2 ):
+		return "low"
+	elif(choice > .2 and choice < .7):
+		return "medium"
+	elif(choice > .7):
+		return "high"
+	
+# Temprature helper function.
+def tempRandomChance():
+	choice = random.random()
+	if(choice < .1 ):
+		return "warm"
+	elif(choice > .1 and choice < .5):
+		return "mild"
+	elif(choice > .5):
+		return "cold"
+
+		
+def calcProb(value):
+	choice = rand.random()
+	
+	if(choice <= value):
+		return "true"
+	else:
+		return "false"
 
 # Checks if this is main. Allows storing everything in other files.
 if __name__ == "__main__":
@@ -168,55 +211,52 @@ if __name__ == "__main__":
 
 	# Verify the query node was set.
 	if (enviro.query_node == None):
-		print ("Error: Query node invalid. Stopping sampling.")
+		print ("\nError: Query node invalid. Stopping sampling.")
 		sys.exit()
 
 	# Store the other nodes.
 	for i in range(0, len(args.observed_nodes)):
 		enviro.setNodeByArg(args.observed_nodes[i])
-	
-	# begin the rounds
-	for x in range(0, rounds):
-		testEnviro = enviro
-		testEnviro.humidity = humidityRandomChance()
-		testEnviro.temp = tempRandomChance()
-		prob = dict2["true", testEnviro.humidity , testEnviro.temp]
-		testEvnrio.icy = calcProb(prob)
-		
-		
+
 	# Print the environment if debugging.
 	if (args.debug):
 		print(enviro)
+	
+	# Variable for the number of rejected samples.
+	rejected_rounds = 0
+
+	# Begin the rounds.
+	for x in range(0, rounds):
+
+		# Store the starting environment in a test variable.
+		testEnviro = copy.copy(enviro)
+
+		# Determine the humidity and if we should reject.
+		test_humidity = humidityRandomChance()
+		if (testEnviro.humidity == None):
+			testEnviro.humidity = test_humidity
+		elif (testEnviro.humidity != test_humidity):
+			rejected_rounds += 1
+			continue
+		elif (testEnviro.query_node == "humidity"):
+			continue
+
+		# Determine the temp and if we should reject.
+		test_temp = tempRandomChance()
+		if (testEnviro.temp == None):
+			testEnviro.temp = test_temp
+		elif (testEnviro.temp != test_temp):
+			rejected_rounds += 1
+			continue
+		elif (testEnviro.query_node == "temp"):
+			continue
+			
+		# prob = dict2["true", testEnviro.humidity , testEnviro.temp]
+		# testEvnrio.icy = calcProb(prob)
+
+	# Final print statement.
+	print("\nFinal Print:")
+	print("\nTotal Samples:",args.iterations)
+	print("Rejected Samples:",rejected_rounds)
 
 #end if(__name__...)
-
-
-	
-def humidityRandomChance():
-	choice = random.random()
-	if(choice < .2 ):
-		return "low"
-	elif(choice > .2 and choice < .5):
-		return "medium"
-	elif(choice > .5):
-		return "high"
-	
-	
-def tempRandomChance():
-	choice = random.random()
-	if(choice < .1 ):
-		return "warm"
-	elif(choice > .1 and choice < .4):
-		return "mild"
-	elif(choice > .4):
-		return "cold"
-
-		
-def calcProb(value):
-	choice = rand.random()
-	
-	if(choice <= value):
-		return "true"
-	else:
-		return "false"
-
