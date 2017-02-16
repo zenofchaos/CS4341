@@ -1,5 +1,6 @@
 # Imports
 import argparse
+import sys
 
 # Constants
 NODE_LIST = ["humidity", "temp", "icy", "snow", "day", "cloudy", "exams", "stress"]
@@ -34,14 +35,20 @@ class Environment:
 
 				# Before storing, is this the query node?
 				if (len(arg_split) == 1):
-					self.query_node = arg_split[0]
+					if (self.query_node == None):
+						self.query_node = arg_split[0]
+					else:
+						print ("\nError: Observable node",arg_split[0],"given no value. Continuing without this node.")
 					return
 
 				# Is the argument humidity?
 				if (i == 0):
 					# Is the correct value being set?
 					if (arg_split[1] in ["low", "medium", "high"]):
-						self.humidity = arg_split[1]
+						if (self.humidity == None):
+							self.humidity = arg_split[1]
+						else:
+							print ("\nError: Second instance of humidity found. Continuing without this node.")
 					else:
 						print("\nError:",arg_split[1],"is not a valid value for humidity (Low, Medium, High). Continuing without this node.")
 					return
@@ -50,7 +57,10 @@ class Environment:
 				if (i == 1):
 					# Is the correct value being set?
 					if (arg_split[1] in ["warm", "mild", "cold"]):
-						self.temp = arg_split[1]
+						if (self.temp == None):
+							self.temp = arg_split[1]
+						else:
+							print ("\nError: Second instance of temp found. Continuing without this node.")
 					else:
 						print("\nError:",arg_split[1],"is not a valid value for temp (Warm, Mild, Cold). Continuing without this node.")
 					return
@@ -59,7 +69,10 @@ class Environment:
 				if (i == 2):
 					# Is the correct value being set?
 					if (arg_split[1] in ["true", "false"]):
-						self.icy = arg_split[1]
+						if (self.icy == None):
+							self.icy = arg_split[1]
+						else:
+							print ("\nError: Second instance of icy found. Continuing without this node.")
 					else:
 						print("\nError:",arg_split[1],"is not a valid value for icy (True or False). Continuing without this node.")
 					return
@@ -68,7 +81,10 @@ class Environment:
 				if (i == 3):
 					# Is the correct value being set?
 					if (arg_split[1] in ["true", "false"]):
-						self.snow = arg_split[1]
+						if (self.snow == None):
+							self.snow = arg_split[1]
+						else:
+							print ("\nError: Second instance of snow found. Continuing without this node.")
 					else:
 						print("\nError:",arg_split[1],"is not a valid value for snow (True or False). Continuing without this node.")
 					return
@@ -77,7 +93,10 @@ class Environment:
 				if (i == 4):
 					# Is the correct value being set?
 					if (arg_split[1] in ["weekend", "weekday"]):
-						self.day = arg_split[1]
+						if (self.day == None):
+							self.day = arg_split[1]
+						else:
+							print ("\nError: Second instance of day found. Continuing without this node.")
 					else:
 						print("\nError:",arg_split[1],"is not a valid value for day (Weekday or Weekend). Continuing without this node.")
 					return
@@ -86,7 +105,10 @@ class Environment:
 				if (i == 5):
 					# Is the correct value being set?
 					if (arg_split[1] in ["true", "false"]):
-						self.cloudy = arg_split[1]
+						if (self.cloudy == None):
+							self.cloudy = arg_split[1]
+						else:
+							print ("\nError: Second instance of cloudy found. Continuing without this node.")
 					else:
 						print("\nError:",arg_split,"is not a valid value for cloudy (True or False). Continuing without this node.")
 					return
@@ -95,7 +117,10 @@ class Environment:
 				if (i == 6):
 					# Is the correct value being set?
 					if (arg_split[1] in ["true", "false"]):
-						self.exams = arg_split[1]
+						if (self.exams == None):
+							self.exams = arg_split[1]
+						else:
+							print ("\nError: Second instance of exams found. Continuing without this node.")
 					else:
 						print("\nError:",arg_split[1],"is not a valid value for exams (True or False). Continuing without this node.")
 					return
@@ -104,7 +129,10 @@ class Environment:
 				if (i == 7):
 					# Is the correct value being set?
 					if (arg_split[1] in ["high", "low"]):
-						self.stress = arg_split[1]
+						if (self.stress == None):
+							self.stress = arg_split[1]
+						else:
+							print ("\nError: Second instance of stress found. Continuing without this node.")
 					else:
 						print("\nError:",arg_split[1],"is not a valid value for stress (High or Low). Continuing without this node.")
 					return
@@ -135,6 +163,11 @@ if __name__ == "__main__":
 	# Store the query node.
 	enviro.setNodeByArg(args.query_node)
 
+	# Verify the query node was set.
+	if (enviro.query_node == None):
+		print ("Error: Query node invalid. Stopping sampling.")
+		sys.exit()
+
 	# Store the other nodes.
 	for i in range(0, len(args.observed_nodes)):
 		enviro.setNodeByArg(args.observed_nodes[i])
@@ -142,5 +175,5 @@ if __name__ == "__main__":
 	# Print the environment if debugging.
 	if (args.debug):
 		print(enviro)
-		
+
 #end if(__name__...)
