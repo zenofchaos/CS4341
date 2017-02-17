@@ -34,18 +34,18 @@ pSnowDict =     {('low'   ,'warm'):.0001,
 pDayDict =      {('weekend'):.2,
                 ('weekday') :.8}
 
-pCloudyDict =   {('true'):.3,
-                ('false'):.9}
+pCloudyDict =   {('true'):.9,
+                ('false'):.3}
 
 pStressDict =   {('false','false'):.01,
                 ('false','true') :.2,
                 ('true' ,'false'):.1,
                 ('true' ,'true') :.5}
 
-pExamsDict =   {('false','false'):.001,
-                ('false','true') :.1,
-                ('true' ,'false'):.0001,
-                ('true' ,'true') :.3}
+pExamsDict =   {('false','weekend'):.001,
+                ('false','weekday') :.1,
+                ('true' ,'weekend'):.0001,
+                ('true' ,'weekday') :.3}
 
 def pHumidity(val):
         return pHumidityDict[val]
@@ -58,7 +58,7 @@ def pSnow(humidity,temp):
 def pDay(val):
         return pDayDict[val]
 def pCloudy(snow):
-        return pCloudy[snow]
+        return pCloudyDict[snow]
 def pStress(snow,exams):
         return pStressDict[snow,exams]
 def pExams(snow,day):

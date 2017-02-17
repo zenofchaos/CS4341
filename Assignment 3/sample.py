@@ -1,6 +1,7 @@
 # Imports
 import argparse
 import copy
+import probDicts
 import random
 import sys
 
@@ -154,7 +155,139 @@ class Environment:
 
 		# Argument is not a node.
 		print("\nError:", arg_split[0],"is not a valid node. Continuing without this node.")
-		return 
+		return
+
+	# Fill the environment with random values.
+	def fillEnvironment(self):
+
+		# Set all the top nodes.
+		self.humidity = humidityRandomChance()
+		self.temp = tempRandomChance()
+		self.day = dayRandomChance()
+
+		# Set the icy value.
+		self.icy = calcProb(probDicts.pIcy(self.humidity, self.temp))
+
+		# Set the snow value.
+		self.snow = calcProb(probDicts.pSnow(self.humidity, self.temp))
+
+		# Set the cloudy value.
+		self.cloudy = calcProb(probDicts.pCloudy(self.snow))
+
+		# Set the exams value.
+		self.exams = calcProb(probDicts.pExams(self.snow, self.day))
+
+		# Set the stress value.
+		if (calcProb(probDicts.pStress(self.snow, self.exams)) == "true"):
+			self.stress = "high"
+		else:
+			self.stress = "low"
+
+	# Reject an environment if anything, but the query node, doesn't match.
+	def reject(self, testEnviro):
+
+		for i in range(0, len(NODE_LIST)):
+
+			# Is the argument humidity?
+			if (i == 0):
+				if ((self.query_node == "humidity") or (self.humidity == None)):
+					continue
+				if (self.humidity != testEnviro.humidity):
+					return True
+
+			# Is the argument temp?
+			if (i == 1):
+				if ((self.query_node == "temp") or (self.temp == None)):
+					continue
+				if (self.temp != testEnviro.temp):
+					return True
+
+			# Is the argument icy?
+			if (i == 2):
+				if ((self.query_node == "icy") or (self.icy == None)):
+					continue
+				if (self.icy != testEnviro.icy):
+					return True
+
+			# Is the argument snow?
+			if (i == 3):
+				if ((self.query_node == "snow") or (self.snow == None)):
+					continue
+				if (self.snow != testEnviro.snow):
+					return True
+
+			# Is the argument day?
+			if (i == 4):
+				if ((self.query_node == "day") or (self.day == None)):
+					continue
+				if (self.day != testEnviro.day):
+					return True
+
+			# Is the argument cloudy?
+			if (i == 5):
+				if ((self.query_node == "cloudy") or (self.cloudy == None)):
+					continue
+				if (self.cloudy != testEnviro.cloudy):
+					return True
+
+			# Is the argument exams?
+			if (i == 6):
+				if ((self.query_node == "exams") or (self.exams == None)):
+					continue
+				if (self.exams != testEnviro.exams):
+					return True			
+
+			# Is the argument stress?
+			if (i == 7):
+				if ((self.query_node == "stress") or (self.stress == None)):
+					continue
+				if (self.stress != testEnviro.stress):
+					return True		
+		return False
+
+	def checkSuccess(self, testEnviro):
+
+		if (self.query_node == "humidity"):
+			if(self.humidity == testEnviro.humidity):
+				return True
+			else:
+				return False
+		if (self.query_node == "temp"):
+			if(self.temp == testEnviro.temp):
+				return True
+			else:
+				return False
+		if (self.query_node == "day"):
+			if(self.day == testEnviro.day):
+				return True
+			else:
+				return False
+		if (self.query_node == "icy"):
+			if(self.icy == testEnviro.icy):
+				return True
+			else:
+				return False
+		if (self.query_node == "snow"):
+			if(self.snow == testEnviro.snow):
+				return True
+			else:
+				return False
+		if (self.query_node == "cloudy"):
+			if(self.cloudy == testEnviro.cloudy):
+				return True
+			else:
+				return False
+		if (self.query_node == "exams"):
+			if(self.exams == testEnviro.exams):
+				return True
+			else:
+				return False
+		if (self.query_node == "stress"):
+			if(self.stress == testEnviro.stress):
+				return True
+			else:
+				return False
+
 
 # Humidity helper function.
 def humidityRandomChance():
@@ -176,9 +309,16 @@ def tempRandomChance():
 	elif(choice > .5):
 		return "cold"
 
+# Day helper function.
+def dayRandomChance():
+	choice = random.random()
+	if(choice < .2 ):
+		return "weekend"
+	elif(choice > .2):
+		return "weekday"
 		
 def calcProb(value):
-	choice = rand.random()
+	choice = random.random()
 	
 	if(choice <= value):
 		return "true"
@@ -217,46 +357,36 @@ if __name__ == "__main__":
 	# Store the other nodes.
 	for i in range(0, len(args.observed_nodes)):
 		enviro.setNodeByArg(args.observed_nodes[i])
-
-	# Print the environment if debugging.
-	if (args.debug):
-		print(enviro)
 	
 	# Variable for the number of rejected samples.
 	rejected_rounds = 0
+	success_rounds = 0
 
 	# Begin the rounds.
 	for x in range(0, rounds):
 
-		# Store the starting environment in a test variable.
-		testEnviro = copy.copy(enviro)
+		# Create and fill a test environment.
+		testEnviro = Environment()
+		testEnviro.fillEnvironment()
 
-		# Determine the humidity and if we should reject.
-		test_humidity = humidityRandomChance()
-		if (testEnviro.humidity == None):
-			testEnviro.humidity = test_humidity
-		elif (testEnviro.humidity != test_humidity):
+		if (args.debug):
+			print(testEnviro)
+
+		# Reject the environment or accept it depending on nodes.
+		if(enviro.reject(testEnviro)):
 			rejected_rounds += 1
 			continue
-		elif (testEnviro.query_node == "humidity"):
-			continue
 
-		# Determine the temp and if we should reject.
-		test_temp = tempRandomChance()
-		if (testEnviro.temp == None):
-			testEnviro.temp = test_temp
-		elif (testEnviro.temp != test_temp):
-			rejected_rounds += 1
-			continue
-		elif (testEnviro.query_node == "temp"):
-			continue
-			
-		# prob = dict2["true", testEnviro.humidity , testEnviro.temp]
-		# testEvnrio.icy = calcProb(prob)
+		# Check if this was a success.
+		if(enviro.checkSuccess(testEnviro)):
+			success_rounds += 1
+
+
 
 	# Final print statement.
 	print("\nFinal Print:")
-	print("\nTotal Samples:",args.iterations)
-	print("Rejected Samples:",rejected_rounds)
-
+	print("\nTotal Samples:", args.iterations)
+	print("Non-Rejected Samples:",(args.iterations - rejected_rounds))
+	print("Estimated Probability:",success_rounds/(args.iterations - rejected_rounds))
+	print("Success Rounds:", success_rounds)
 #end if(__name__...)
