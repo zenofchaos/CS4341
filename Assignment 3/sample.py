@@ -4,6 +4,7 @@ import copy
 import probDicts
 import random
 import sys
+import time
 
 # Constants
 NODE_LIST = ["humidity", "temp", "icy", "snow", "day", "cloudy", "exams", "stress"]
@@ -328,6 +329,9 @@ def calcProb(value):
 # Checks if this is main. Allows storing everything in other files.
 if __name__ == "__main__":
 
+	# Create the timer.
+	start_time = time.time()
+
 	# Create the argument parser.
 	parser = argparse.ArgumentParser(description="Runs rejection sampling on the tree provided for assignment 3.")
 
@@ -381,12 +385,12 @@ if __name__ == "__main__":
 		if(enviro.checkSuccess(testEnviro)):
 			success_rounds += 1
 
-
+	end_time = time.time()
 
 	# Final print statement.
 	print("\nFinal Print:")
 	print("\nTotal Samples:", args.iterations)
 	print("Non-Rejected Samples:",(args.iterations - rejected_rounds))
 	print("Estimated Probability:",success_rounds/(args.iterations - rejected_rounds))
-	print("Success Rounds:", success_rounds)
+	print("Time Taken:", (end_time - start_time), "seconds")
 #end if(__name__...)
