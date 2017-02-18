@@ -4,6 +4,7 @@ import copy
 import probDicts
 import random
 import sys
+import math
 import time
 
 # Constants
@@ -326,10 +327,20 @@ def calcProb(value):
 	else:
 		return "false"
 
+# Calculate standard deviation
+def calcSD(prob):
+        return math.sqrt(prob*(1-prob))
+
+# Calculate AME - Absolute Margin of Error
+# 95% Confidence Inbterval = mean +/- AME
+def calcAME(sd,n):
+        AME = 2*(sd/math.sqrt(n))
+        return AME
+
 # Checks if this is main. Allows storing everything in other files.
 if __name__ == "__main__":
-
-	# Create the timer.
+	
+	# Create timer.
 	start_time = time.time()
 
 	# Create the argument parser.
@@ -387,10 +398,13 @@ if __name__ == "__main__":
 
 	end_time = time.time()
 
+
 	# Final print statement.
 	print("\nFinal Print:")
 	print("\nTotal Samples:", args.iterations)
 	print("Non-Rejected Samples:",(args.iterations - rejected_rounds))
 	print("Estimated Probability:",success_rounds/(args.iterations - rejected_rounds))
-	print("Time Taken:", (end_time - start_time), "seconds")
+	print("Time Taken:", (end_time - start_time))
+	print("Standard deviation:", calcSD(success_rounds/(args.iterations - rejected_rounds)))
+	print("AME for a 95% Confidence Interval:", calcAME(calcSD(success_rounds/(args.iterations - rejected_rounds)),(args.iterations - rejected_rounds)))
 #end if(__name__...)
