@@ -401,10 +401,13 @@ if __name__ == "__main__":
 
 	# Final print statement.
 	print("\nFinal Print:")
-	print("\nTotal Samples:", args.iterations)
+	print("\nTime Taken:", (end_time - start_time))
+	print("Total Samples:", args.iterations)
 	print("Non-Rejected Samples:",(args.iterations - rejected_rounds))
+	if (args.iterations == rejected_rounds):
+		print("All rounds rejected. No estimated probability, standard deviation, or confidence interval.")
+		sys.exit()
 	print("Estimated Probability:",success_rounds/(args.iterations - rejected_rounds))
-	print("Time Taken:", (end_time - start_time))
 	print("Standard deviation:", calcSD(success_rounds/(args.iterations - rejected_rounds)))
 	print("AME for a 95% Confidence Interval:", calcAME(calcSD(success_rounds/(args.iterations - rejected_rounds)),(args.iterations - rejected_rounds)))
 #end if(__name__...)
