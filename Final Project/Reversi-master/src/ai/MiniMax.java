@@ -22,143 +22,154 @@
 package ai;
 
 import java.util.ArrayDeque;
+import java.util.Random;
+import java.util.Vector;
+
 import ai.Node.NodeType;
 
 public class MiniMax {
 
-    public enum SearchAlgorithm{
-        MINIMAX, ALPHA_BETA_PRUNING
-    }
+	public enum SearchAlgorithm {
+		RANDOM_SEARCH, MINIMAX, ALPHA_BETA_PRUNING
+	}
 
-    public void apply(Node n, int maxDepth, SearchAlgorithm algorithm, Evaluator eval){
-        if(algorithm == SearchAlgorithm.MINIMAX){
-            minimax(n, maxDepth, eval);
-        }else if(algorithm == SearchAlgorithm.ALPHA_BETA_PRUNING){
-            alphaBetaPruning(n, maxDepth, eval);
-        }
-    }
+	public void apply(Node n, int maxDepth, SearchAlgorithm algorithm, Evaluator eval) {
+		if (algorithm == SearchAlgorithm.MINIMAX) {
+			minimax(n, maxDepth, eval);
+		} else if (algorithm == SearchAlgorithm.ALPHA_BETA_PRUNING) {
+			alphaBetaPruning(n, maxDepth, eval);
+		} else if (algorithm == SearchAlgorithm.RANDOM_SEARCH) {
+			randomSearch(n);
+		}
+	}
 
-    private void minimax(Node n, int maxDepth, Evaluator eval) {
-        if (n.isEndGameNode()) {
-            System.out.println("H1");
-            return;
-        }
-        ArrayDeque<Node> searchStack = new ArrayDeque<Node>();
-        searchStack.push(n);
+	private void randomSearch(Node n) {
 
-        while (searchStack.isEmpty() == false) {
-            Node node = searchStack.pop();
+		Vector<Node> children = n.getChildren();
+		int random_index = new Random().nextInt(children.size());
+		Node next_node = children.get(random_index);
+		Move next_move = next_node.getMoveLeadingHere();
+		n.setNextMove(next_move);
+	}
 
-            Move nextMove = node.getNextMove();
-            boolean isRoot = node.isRoot();
+	private void minimax(Node n, int maxDepth, Evaluator eval) {
 
-            if (node.isTerminal(maxDepth)) {
-                node.setValue(eval.evaluate(node));
-                if (!isRoot) {
-                    Node parent = node.getParent();
-                    if (parent.setValue(node.getValue())) {
-                        parent.setNextMove(node.getMoveLeadingHere());
-                    }
-                }
-            } else {
-                if (node.hasMoreChildren()) {
-                    searchStack.push(node);
-                    searchStack.push(node.getNextChild());
-                } else {
-                    if (nextMove != null) {
-                        if (!isRoot) {
-                            Node parent = node.getParent();
-                            if (parent.setValue(node.getValue())) {
-                                parent.setNextMove(node.getMoveLeadingHere());
-                            }
-                        }
-                    }
-                }
-            }
+		if (n.isEndGameNode()) {
+			System.out.println("H1");
+			return;
+		}
+		ArrayDeque<Node> searchStack = new ArrayDeque<Node>();
+		searchStack.push(n);
 
-            node.setVisited(true);
-            //print(node);
-        }
-    }
+		while (searchStack.isEmpty() == false) {
+			Node node = searchStack.pop();
 
+			Move nextMove = node.getNextMove();
+			boolean isRoot = node.isRoot();
 
-    private void alphaBetaPruning(Node n, int maxDepth, Evaluator eval) {
-        if (n.isEndGameNode()) {
-            System.out.println("H1");
-            return;
-        }
-        ArrayDeque<Node> searchStack = new ArrayDeque<Node>();
-        searchStack.push(n);
+			if (node.isTerminal(maxDepth)) {
+				node.setValue(eval.evaluate(node));
+				if (!isRoot) {
+					Node parent = node.getParent();
+					if (parent.setValue(node.getValue())) {
+						parent.setNextMove(node.getMoveLeadingHere());
+					}
+				}
+			} else {
+				if (node.hasMoreChildren()) {
+					searchStack.push(node);
+					searchStack.push(node.getNextChild());
+				} else {
+					if (nextMove != null) {
+						if (!isRoot) {
+							Node parent = node.getParent();
+							if (parent.setValue(node.getValue())) {
+								parent.setNextMove(node.getMoveLeadingHere());
+							}
+						}
+					}
+				}
+			}
 
-        while (searchStack.isEmpty() == false) {
-            Node node = searchStack.pop();
+			node.setVisited(true);
+			// print(node);
+		}
+	}
 
-            Move nextMove = node.getNextMove();
-            boolean isRoot = node.isRoot();
+	private void alphaBetaPruning(Node n, int maxDepth, Evaluator eval) {
+		if (n.isEndGameNode()) {
+			System.out.println("H1");
+			return;
+		}
+		ArrayDeque<Node> searchStack = new ArrayDeque<Node>();
+		searchStack.push(n);
 
-            if (node.isTerminal(maxDepth)) {
-                node.setValue(eval.evaluate(node));
-                if (!isRoot) {
-                    Node parent = node.getParent();
-                    if (parent.setValue(node.getValue())) {
-                        parent.setNextMove(node.getMoveLeadingHere());
-                    }
-                }
-            } else {
-                if (node.hasMoreChildren()) {
-                    if (!isRoot) {
-                        Integer nodeValue = node.getValue();
-                        if(nodeValue!=null){
-                            Node parent = node.getParent();
-                            Integer parentValue = parent.getValue();
-                            if(parentValue==null){
-                                searchStack.push(node);
-                                searchStack.push(node.getNextChild());
-                            }else{
-                                NodeType type = parent.getType();
-                                if(type == NodeType.MAX){
-                                    //Pruning:
-                                    if(node.getValue()>=parentValue){
-                                        searchStack.push(node);
-                                        searchStack.push(node.getNextChild());
-                                    }
-                                }else{
-                                    //Pruning:
-                                    if(node.getValue()<=parentValue){
-                                        searchStack.push(node);
-                                        searchStack.push(node.getNextChild());
-                                    }
-                                }
-                            }
-                        }
-                        else{
-                            searchStack.push(node);
-                            searchStack.push(node.getNextChild());
-                        }
-                    }else{
-                        searchStack.push(node);
-                        searchStack.push(node.getNextChild());
-                    }
-                } else {
-                    if (nextMove != null) {
-                        if (!isRoot) {
-                            Node parent = node.getParent();
-                            if (parent.setValue(node.getValue())) {
-                                parent.setNextMove(node.getMoveLeadingHere());
-                            }
-                        }
-                    }
-                }
-            }
+		while (searchStack.isEmpty() == false) {
+			Node node = searchStack.pop();
 
-            node.setVisited(true);
-            //print(node);
-        }
-    }
+			Move nextMove = node.getNextMove();
+			boolean isRoot = node.isRoot();
 
-    
+			if (node.isTerminal(maxDepth)) {
+				node.setValue(eval.evaluate(node));
+				if (!isRoot) {
+					Node parent = node.getParent();
+					if (parent.setValue(node.getValue())) {
+						parent.setNextMove(node.getMoveLeadingHere());
+					}
+				}
+			} else {
+				if (node.hasMoreChildren()) {
+					if (!isRoot) {
+						Integer nodeValue = node.getValue();
+						if (nodeValue != null) {
+							Node parent = node.getParent();
+							Integer parentValue = parent.getValue();
+							if (parentValue == null) {
+								searchStack.push(node);
+								searchStack.push(node.getNextChild());
+							} else {
+								NodeType type = parent.getType();
+								if (type == NodeType.MAX) {
+									// Pruning:
+									if (node.getValue() >= parentValue) {
+										searchStack.push(node);
+										searchStack.push(node.getNextChild());
+									}
+								} else {
+									// Pruning:
+									if (node.getValue() <= parentValue) {
+										searchStack.push(node);
+										searchStack.push(node.getNextChild());
+									}
+								}
+							}
+						} else {
+							searchStack.push(node);
+							searchStack.push(node.getNextChild());
+						}
+					} else {
+						searchStack.push(node);
+						searchStack.push(node.getNextChild());
+					}
+				} else {
+					if (nextMove != null) {
+						if (!isRoot) {
+							Node parent = node.getParent();
+							if (parent.setValue(node.getValue())) {
+								parent.setNextMove(node.getMoveLeadingHere());
+							}
+						}
+					}
+				}
+			}
 
-    private void print(Node n) {
-        System.out.println(n.toString());
-    }
+			node.setVisited(true);
+			// print(node);
+		}
+	}
+
+	private void print(Node n) {
+		System.out.println(n.toString());
+	}
 }
