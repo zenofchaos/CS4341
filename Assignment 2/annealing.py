@@ -131,10 +131,10 @@ def annealClimb(args, arr, score):
 		tempbin3 = prime_bin
 
 	# Produce a csv file.
-	with open('some.csv', 'a', newline='') as f:
-		writer = csv.writer(f)
+	#with open('some.csv', 'a', newline='') as f:
+	#	writer = csv.writer(f)
 		# writer.writerow(range(0,len(scoreOverTime) * 100, 100))
-		writer.writerow(scoreOverTime)
+	#	writer.writerow(scoreOverTime)
 
 	print ("\nFinal Simulated Annealing Results:")
 	print ("Bin #1:", tempbin1)
