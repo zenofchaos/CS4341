@@ -114,8 +114,10 @@ public class MainWindow extends javax.swing.JFrame implements GameUndoRedoListen
 			algorithm = MiniMax.SearchAlgorithm.MINIMAX;
 		} else if (this.jRadioButton9.isSelected()) {
 			algorithm = MiniMax.SearchAlgorithm.ALPHA_BETA_PRUNING;
-		} else {
+		} else if (this.jRadioButton10.isSelected()){
 			algorithm = MiniMax.SearchAlgorithm.RANDOM_SEARCH;
+		} else {
+			algorithm = MiniMax.SearchAlgorithm.GREEDY_SEARCH;
 		}
 
 		updateUndoRedoControls();
@@ -166,6 +168,7 @@ public class MainWindow extends javax.swing.JFrame implements GameUndoRedoListen
 		this.jRadioButton8.setEnabled(enabled);
 		this.jRadioButton9.setEnabled(enabled);
 		this.jRadioButton10.setEnabled(enabled);
+		this.jRadioButton11.setEnabled(enabled);
 		this.jSpinner1.setEnabled(enabled);
 	}
 
@@ -274,6 +277,7 @@ public class MainWindow extends javax.swing.JFrame implements GameUndoRedoListen
 		jRadioButton8 = new javax.swing.JRadioButton();
 		jRadioButton9 = new javax.swing.JRadioButton();
 		jRadioButton10 = new javax.swing.JRadioButton();
+		jRadioButton11 = new javax.swing.JRadioButton();
 		jPanel4 = new javax.swing.JPanel();
 		jPanel5 = new javax.swing.JPanel();
 		jButton3 = new javax.swing.JButton();
@@ -359,14 +363,14 @@ public class MainWindow extends javax.swing.JFrame implements GameUndoRedoListen
 		jSpinner1.setModel(new javax.swing.SpinnerNumberModel(3, 2, 6, 1));
 
 		buttonGroup3.add(jRadioButton5);
-		jRadioButton5.setText("Method 1");
+		jRadioButton5.setText("Score");
 
 		buttonGroup3.add(jRadioButton6);
-		jRadioButton6.setText("Method 2");
+		jRadioButton6.setText("Num Sides");
 
 		buttonGroup3.add(jRadioButton7);
 		jRadioButton7.setSelected(true);
-		jRadioButton7.setText("Method 3");
+		jRadioButton7.setText("Num Corners");
 
 		jLabel4.setText("<html><b>Search tree depth :</b></html>");
 
@@ -382,6 +386,10 @@ public class MainWindow extends javax.swing.JFrame implements GameUndoRedoListen
 		buttonGroup4.add(jRadioButton10);
 		jRadioButton10.setSelected(false);
 		jRadioButton10.setText("Random Selection");
+		
+		buttonGroup4.add(jRadioButton11);
+		jRadioButton11.setSelected(false);
+		jRadioButton11.setText("Greedy Selection");
 
 		javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
 		jPanel1.setLayout(jPanel1Layout);
@@ -422,7 +430,9 @@ public class MainWindow extends javax.swing.JFrame implements GameUndoRedoListen
 												.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
 												.addComponent(jRadioButton9)
 												.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-												.addComponent(jRadioButton10))
+												.addComponent(jRadioButton10)
+												.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+												.addComponent(jRadioButton11))
 										.addGroup(jPanel1Layout.createSequentialGroup()
 												.addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE,
 														javax.swing.GroupLayout.DEFAULT_SIZE,
@@ -462,7 +472,7 @@ public class MainWindow extends javax.swing.JFrame implements GameUndoRedoListen
 														javax.swing.GroupLayout.DEFAULT_SIZE,
 														javax.swing.GroupLayout.PREFERRED_SIZE)
 												.addComponent(jRadioButton8).addComponent(jRadioButton9)
-												.addComponent(jRadioButton10))
+												.addComponent(jRadioButton10).addComponent(jRadioButton11))
 										.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
 										.addGroup(jPanel1Layout
 												.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -743,6 +753,7 @@ public class MainWindow extends javax.swing.JFrame implements GameUndoRedoListen
 	private javax.swing.JRadioButton jRadioButton8;
 	private javax.swing.JRadioButton jRadioButton9;
 	private javax.swing.JRadioButton jRadioButton10;
+	private javax.swing.JRadioButton jRadioButton11;
 	private javax.swing.JScrollPane jScrollPane1;
 	private javax.swing.JSeparator jSeparator1;
 	private javax.swing.JPopupMenu.Separator jSeparator2;

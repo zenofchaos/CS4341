@@ -30,7 +30,7 @@ import ai.Node.NodeType;
 public class MiniMax {
 
 	public enum SearchAlgorithm {
-		RANDOM_SEARCH, MINIMAX, ALPHA_BETA_PRUNING
+		RANDOM_SEARCH, MINIMAX, ALPHA_BETA_PRUNING, GREEDY_SEARCH
 	}
 
 	public void apply(Node n, int maxDepth, SearchAlgorithm algorithm, Evaluator eval) {
@@ -40,13 +40,45 @@ public class MiniMax {
 			alphaBetaPruning(n, maxDepth, eval);
 		} else if (algorithm == SearchAlgorithm.RANDOM_SEARCH) {
 			randomSearch(n);
+		} else if (algorithm == SearchAlgorithm.GREEDY_SEARCH){
+			greedySearch(n,eval);
 		}
 	}
-
+	
+	//Randomly chooses moves
 	private void randomSearch(Node n) {
 
 		Vector<Node> children = n.getChildren();
 		int random_index = new Random().nextInt(children.size());
+		Node next_node = children.get(random_index);
+		Move next_move = next_node.getMoveLeadingHere();
+		n.setNextMove(next_move);
+	}
+	
+	//Chooses the move which increases the score (based on evaluation method) the most
+	private void greedySearch(Node n, Evaluator eval){
+		if (n.isEndGameNode()) {
+			System.out.println("H1");
+			return;
+		}
+		Vector<Node> children = n.getChildren();
+		if (children.size() == 0) {
+			//no possible moves
+			return;
+		}
+		int maxVal = eval.evaluate(children.get(0));
+		Vector<Node> choices = new Vector<Node>(children.size());
+		choices.add(children.get(0));
+		for (int i = 1; i < children.size(); i++){
+			if (maxVal < eval.evaluate(children.get(i))){
+				choices.removeAllElements();
+				choices.add(children.get(i));
+			}
+			else if (maxVal == eval.evaluate(children.get(i))){
+				choices.add(children.get(i));
+			}
+		}
+		int random_index = new Random().nextInt(choices.size());
 		Node next_node = children.get(random_index);
 		Move next_move = next_node.getMoveLeadingHere();
 		n.setNextMove(next_move);
