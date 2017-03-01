@@ -28,8 +28,10 @@ public interface GameView {
     public void setController(GameController g);
     public Board getBoard();
     public void  setBoard(Board b);
-    public void setAIIsPlaying(boolean AIIsPlaying);
-    public boolean getAIIsPlaying();
+    public void setAI1IsPlaying(boolean AI1IsPlaying);
+    public boolean getAI1IsPlaying();
+    public void setAI2IsPlaying(boolean AI2IsPlaying);
+    public boolean getAI2IsPlaying();
     public void setPlayerHasNoMovesAvailable(boolean playerHasNoValidMoves, String player);
 
 }
