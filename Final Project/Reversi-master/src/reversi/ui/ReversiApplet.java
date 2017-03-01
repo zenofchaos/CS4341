@@ -132,7 +132,7 @@ public class ReversiApplet extends javax.swing.JApplet implements GameUndoRedoLi
         this.jPanel7.removeAll();
         BoardPanel boardPanel = new BoardPanel();
         this.jPanel7.add(boardPanel);
-        this.gameController = new GameController(singlePlayer, player, new Board(), boardPanel, d, algorithm, evalMethod, Utils.WAIT_FOR_MILLIS);
+        this.gameController = new GameController(singlePlayer, singlePlayer, player, new Board(), boardPanel, d, d, algorithm, algorithm, evalMethod, evalMethod, Utils.WAIT_FOR_MILLIS);
         this.gameController.addGameUndoRedoListener(this);
         this.gameController.addGameLogger(this);
         this.gameController.startGame();
