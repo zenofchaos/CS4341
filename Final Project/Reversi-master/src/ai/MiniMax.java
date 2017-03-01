@@ -22,26 +22,36 @@
 package ai;
 
 import java.util.ArrayDeque;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.Random;
 import java.util.Vector;
 
 import ai.Node.NodeType;
 
 public class MiniMax {
-
+	 static int seconds; 
+	 static Timer timer = new Timer();
+	
 	public enum SearchAlgorithm {
-		RANDOM_SEARCH, MINIMAX, ALPHA_BETA_PRUNING, GREEDY_SEARCH
+
+		RANDOM_SEARCH, MINIMAX, ALPHA_BETA_PRUNING, ITERATIVE_DEEP, GREEDY_SEARCH
 	}
 
 	public void apply(Node n, int maxDepth, SearchAlgorithm algorithm, Evaluator eval) {
+		System.out.println("Algorithm = " + algorithm);
+		
 		if (algorithm == SearchAlgorithm.MINIMAX) {
 			minimax(n, maxDepth, eval);
 		} else if (algorithm == SearchAlgorithm.ALPHA_BETA_PRUNING) {
 			alphaBetaPruning(n, maxDepth, eval);
 		} else if (algorithm == SearchAlgorithm.RANDOM_SEARCH) {
 			randomSearch(n);
+		} else if( algorithm == SearchAlgorithm.ITERATIVE_DEEP){
+			iterativeDeep(n,maxDepth,eval,10);
 		} else if (algorithm == SearchAlgorithm.GREEDY_SEARCH){
 			greedySearch(n,eval);
+
 		}
 	}
 	
@@ -205,6 +215,30 @@ public class MiniMax {
 		}
 	}
 
+	// Iterative deepening function. Is time based instead of 
+	private void iterativeDeep(Node n, int maxDepth, Evaluator eval, int time) {
+	     TimerTask task;
+	    final int timeLimit = time;
+	    final Node passN = n;
+	    final Evaluator passE = eval;
+	    
+	     task = new TimerTask() {
+	         @Override
+	         public void run() { 
+	             if (seconds < timeLimit) {
+	                 System.out.println("Seconds = " + seconds);
+	                 seconds++;
+	             } else {
+	                 // stop the timer
+	                 cancel();
+	             }
+	         }
+	     };
+	         timer.schedule(task, 0, 1000);
+
+	     
+	}
+	
 	private void print(Node n) {
 		System.out.println(n.toString());
 	}
