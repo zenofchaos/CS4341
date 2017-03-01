@@ -47,8 +47,12 @@ public class MiniMax {
 	
 	//Randomly chooses moves
 	private void randomSearch(Node n) {
-
+		
 		Vector<Node> children = n.getChildren();
+		if (children.size() == 0) {
+			//no possible moves
+			return;
+		}
 		int random_index = new Random().nextInt(children.size());
 		Node next_node = children.get(random_index);
 		Move next_move = next_node.getMoveLeadingHere();
