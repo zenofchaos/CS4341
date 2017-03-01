@@ -82,44 +82,65 @@ public class MainWindow extends javax.swing.JFrame implements GameUndoRedoListen
 
 		this.gameController = null;
 
-		int player;
-		if (this.jRadioButton1.isSelected()) {
-			player = Utils.BLACK;
+		int P1Color;
+		if (this.jRB_P1ColorBlack.isSelected()) {
+			P1Color = Utils.BLACK;
 		} else {
-			player = Utils.WHITE;
+			P1Color = Utils.WHITE;
+		}
+		
+		boolean isP1Human;
+		isP1Human = this.jRB_P1Human.isSelected();
+		boolean isP2Human;
+		isP2Human = this.jRB_P2Human.isSelected();
+		
+		int d2 = (Integer) this.jSpinnerP2.getModel().getValue();
+		int d1 = (Integer) this.jSpinnerP1.getModel().getValue();
+		
+		EvaluationMethod evalMethod2;
+		EvaluationMethod evalMethod1;
+
+		if (this.jRB_P2Meth1.isSelected()) {
+			evalMethod2 = EvaluationMethod.VALID_MOVES_AND_TOTAL_SCORE;
+		} else if (this.jRB_P2Meth2.isSelected()) {
+			evalMethod2 = EvaluationMethod.VALID_MOVES_AND_SIDES_COUNT;
+		} else {
+			evalMethod2 = EvaluationMethod.VALID_MOVES_AND_CORNERS;
+		}
+		
+		if (this.jRB_P1Meth1.isSelected()) {
+			evalMethod1 = EvaluationMethod.VALID_MOVES_AND_TOTAL_SCORE;
+		} else if (this.jRB_P1Meth2.isSelected()) {
+			evalMethod1 = EvaluationMethod.VALID_MOVES_AND_SIDES_COUNT;
+		} else {
+			evalMethod1 = EvaluationMethod.VALID_MOVES_AND_CORNERS;
 		}
 
-		boolean singlePlayer;
-		if (this.jRadioButton3.isSelected()) {
-			singlePlayer = false;
+		MiniMax.SearchAlgorithm algorithm2;
+		MiniMax.SearchAlgorithm algorithm1;
+
+		if (this.jRB_P2AlgMM.isSelected()) {
+			algorithm2 = MiniMax.SearchAlgorithm.MINIMAX;
+		} else if (this.jRB_P2AlgABP.isSelected()) {
+			algorithm2 = MiniMax.SearchAlgorithm.ALPHA_BETA_PRUNING;
+		} else if (this.jRB_P2AlgID.isSelected()) {
+			algorithm2 = MiniMax.SearchAlgorithm.ITERATIVE_DEEP;
+		} else if (this.jRB_P2AlgRS.isSelected()) {
+			algorithm2 = MiniMax.SearchAlgorithm.RANDOM_SEARCH;
 		} else {
-			singlePlayer = true;
+			algorithm2 = MiniMax.SearchAlgorithm.GREEDY_SEARCH;
 		}
-
-		int d = (Integer) this.jSpinner1.getModel().getValue();
-
-		EvaluationMethod evalMethod;
-
-		if (this.jRadioButton5.isSelected()) {
-			evalMethod = EvaluationMethod.VALID_MOVES_AND_TOTAL_SCORE;
-		} else if (this.jRadioButton6.isSelected()) {
-			evalMethod = EvaluationMethod.VALID_MOVES_AND_SIDES_COUNT;
+		
+		if (this.jRB_P1AlgMM.isSelected()) {
+			algorithm1 = MiniMax.SearchAlgorithm.MINIMAX;
+		} else if (this.jRB_P1AlgABP.isSelected()) {
+			algorithm1 = MiniMax.SearchAlgorithm.ALPHA_BETA_PRUNING;
+		} else if (this.jRB_P1AlgID.isSelected()) {
+			algorithm1 = MiniMax.SearchAlgorithm.ITERATIVE_DEEP;
+		} else if (this.jRB_P1AlgRS.isSelected()) {
+			algorithm1 = MiniMax.SearchAlgorithm.RANDOM_SEARCH;
 		} else {
-			evalMethod = EvaluationMethod.VALID_MOVES_AND_CORNERS;
-		}
-
-		MiniMax.SearchAlgorithm algorithm;
-
-		if (this.jRadioButton8.isSelected()) {
-			algorithm = MiniMax.SearchAlgorithm.MINIMAX;
-		} else if (this.jRadioButton9.isSelected()) {
-			algorithm = MiniMax.SearchAlgorithm.ALPHA_BETA_PRUNING;
-		} else if (this.jRadioButton12.isSelected()) {
-			algorithm = MiniMax.SearchAlgorithm.ITERATIVE_DEEP;
-		} else if (this.jRadioButton10.isSelected()){
-			algorithm = MiniMax.SearchAlgorithm.RANDOM_SEARCH;
-		} else {
-			algorithm = MiniMax.SearchAlgorithm.GREEDY_SEARCH;
+			algorithm1 = MiniMax.SearchAlgorithm.GREEDY_SEARCH;
 		}
 
 		updateUndoRedoControls();
@@ -127,8 +148,8 @@ public class MainWindow extends javax.swing.JFrame implements GameUndoRedoListen
 		this.jPanel7.removeAll();
 		BoardPanel boardPanel = new BoardPanel();
 		this.jPanel7.add(boardPanel);
-		this.gameController = new GameController(singlePlayer, player, new Board(), boardPanel, d, algorithm,
-				evalMethod, Utils.WAIT_FOR_MILLIS);
+		this.gameController = new GameController(isP1Human, isP2Human, P1Color, new Board(), boardPanel, 
+				d1, d2, algorithm1, algorithm2, evalMethod1, evalMethod2, Utils.WAIT_FOR_MILLIS);
 		this.gameController.addGameUndoRedoListener(this);
 		this.gameController.addGameLogger(this);
 		this.gameController.startGame();
@@ -160,19 +181,34 @@ public class MainWindow extends javax.swing.JFrame implements GameUndoRedoListen
 		this.updateUndoRedoControls();
 	}
 
-	private void setComputerAIControlsEnabled(boolean enabled) {
-		this.jLabel3.setEnabled(enabled);
-		this.jLabel4.setEnabled(enabled);
-		this.jLabel7.setEnabled(enabled);
-		this.jRadioButton5.setEnabled(enabled);
-		this.jRadioButton6.setEnabled(enabled);
-		this.jRadioButton7.setEnabled(enabled);
-		this.jRadioButton8.setEnabled(enabled);
-		this.jRadioButton9.setEnabled(enabled);
-		this.jRadioButton10.setEnabled(enabled);
-		this.jRadioButton12.setEnabled(enabled);
-		this.jRadioButton11.setEnabled(enabled);
-		this.jSpinner1.setEnabled(enabled);
+	private void setComputerAI1ControlsEnabled(boolean enabled) {
+		this.jLabelP1Meth.setEnabled(enabled);
+		this.jLabelP1Tree.setEnabled(enabled);
+		this.jLabelP1Alg.setEnabled(enabled);
+		this.jRB_P1Meth1.setEnabled(enabled);
+		this.jRB_P1Meth2.setEnabled(enabled);
+		this.jRB_P1Meth3.setEnabled(enabled);
+		this.jRB_P1AlgMM.setEnabled(enabled);
+		this.jRB_P1AlgABP.setEnabled(enabled);
+		this.jRB_P1AlgRS.setEnabled(enabled);
+		this.jRB_P1AlgID.setEnabled(enabled);
+		this.jRB_P1AlgGS.setEnabled(enabled);
+		this.jSpinnerP1.setEnabled(enabled);
+	}
+	
+	private void setComputerAI2ControlsEnabled(boolean enabled) {
+		this.jLabelP2Meth.setEnabled(enabled);
+		this.jLabelP2Tree.setEnabled(enabled);
+		this.jLabelP2Alg.setEnabled(enabled);
+		this.jRB_P2Meth1.setEnabled(enabled);
+		this.jRB_P2Meth2.setEnabled(enabled);
+		this.jRB_P2Meth3.setEnabled(enabled);
+		this.jRB_P2AlgMM.setEnabled(enabled);
+		this.jRB_P2AlgABP.setEnabled(enabled);
+		this.jRB_P2AlgRS.setEnabled(enabled);
+		this.jRB_P2AlgID.setEnabled(enabled);
+		this.jRB_P2AlgGS.setEnabled(enabled);
+		this.jSpinnerP2.setEnabled(enabled);
 	}
 
 	public void newGameStarted() {
@@ -251,37 +287,55 @@ public class MainWindow extends javax.swing.JFrame implements GameUndoRedoListen
 	// <editor-fold defaultstate="collapsed" desc="Generated
 	// Code">//GEN-BEGIN:initComponents
 	private void initComponents() {
-
-		buttonGroup1 = new javax.swing.ButtonGroup();
-		buttonGroup2 = new javax.swing.ButtonGroup();
-		buttonGroup3 = new javax.swing.ButtonGroup();
-		buttonGroup4 = new javax.swing.ButtonGroup();
+		
+		jRB_P1Human = new javax.swing.JRadioButton();
+		jRB_P1Comp = new javax.swing.JRadioButton();
+		jRB_P1Meth1 = new javax.swing.JRadioButton();
+		jRB_P1Meth2 = new javax.swing.JRadioButton();
+		jRB_P1Meth3 = new javax.swing.JRadioButton();
+		jRB_P1AlgMM = new javax.swing.JRadioButton();
+		jRB_P1AlgABP = new javax.swing.JRadioButton();
+		jRB_P1AlgRS = new javax.swing.JRadioButton();
+		jRB_P1AlgID = new javax.swing.JRadioButton();
+		jRB_P1AlgGS = new javax.swing.JRadioButton();
+		jSpinnerP1 = new javax.swing.JSpinner();
+		jLabelP1 = new javax.swing.JLabel();
+		jLabelP1Alg = new javax.swing.JLabel();
+		jLabelP1Meth = new javax.swing.JLabel();
+		jLabelP1Tree = new javax.swing.JLabel();
+		buttonGroupColor = new javax.swing.ButtonGroup();
+		buttonGroupP2 = new javax.swing.ButtonGroup();
+		buttonGroupP2Meth = new javax.swing.ButtonGroup();
+		buttonGroupP2Alg = new javax.swing.ButtonGroup();
+		buttonGroupP1 = new javax.swing.ButtonGroup();
+		buttonGroupP1Meth = new javax.swing.ButtonGroup();
+		buttonGroupP1Alg = new javax.swing.ButtonGroup();
 		jPanel6 = new javax.swing.JPanel();
 		jPanel3 = new javax.swing.JPanel();
 		jPanel1 = new javax.swing.JPanel();
 		jButton1 = new javax.swing.JButton();
-		jLabel1 = new javax.swing.JLabel();
-		jRadioButton1 = new javax.swing.JRadioButton();
-		jRadioButton2 = new javax.swing.JRadioButton();
-		jLabel2 = new javax.swing.JLabel();
-		jRadioButton3 = new javax.swing.JRadioButton();
-		jRadioButton4 = new javax.swing.JRadioButton();
-		jLabel3 = new javax.swing.JLabel();
+		jLabelP1Color = new javax.swing.JLabel();
+		jRB_P1ColorBlack = new javax.swing.JRadioButton();
+		jRB_P1ColorWhite = new javax.swing.JRadioButton();
+		jLabelP2 = new javax.swing.JLabel();
+		jRB_P2Human = new javax.swing.JRadioButton();
+		jRB_P2Comp = new javax.swing.JRadioButton();
+		jLabelP2Meth = new javax.swing.JLabel();
 		jSeparator1 = new javax.swing.JSeparator();
-		jPanel2 = new javax.swing.JPanel();
+		jPanelNewGame = new javax.swing.JPanel();
 		jButton2 = new javax.swing.JButton();
 		jLabel5 = new javax.swing.JLabel();
-		jSpinner1 = new javax.swing.JSpinner();
-		jRadioButton5 = new javax.swing.JRadioButton();
-		jRadioButton6 = new javax.swing.JRadioButton();
-		jRadioButton7 = new javax.swing.JRadioButton();
-		jLabel4 = new javax.swing.JLabel();
-		jLabel7 = new javax.swing.JLabel();
-		jRadioButton8 = new javax.swing.JRadioButton();
-		jRadioButton9 = new javax.swing.JRadioButton();
-		jRadioButton10 = new javax.swing.JRadioButton();
-		jRadioButton12 = new javax.swing.JRadioButton();
-		jRadioButton11 = new javax.swing.JRadioButton();
+		jSpinnerP2 = new javax.swing.JSpinner();
+		jRB_P2Meth1 = new javax.swing.JRadioButton();
+		jRB_P2Meth2 = new javax.swing.JRadioButton();
+		jRB_P2Meth3 = new javax.swing.JRadioButton();
+		jLabelP2Tree = new javax.swing.JLabel();
+		jLabelP2Alg = new javax.swing.JLabel();
+		jRB_P2AlgMM = new javax.swing.JRadioButton();
+		jRB_P2AlgABP = new javax.swing.JRadioButton();
+		jRB_P2AlgRS = new javax.swing.JRadioButton();
+		jRB_P2AlgID = new javax.swing.JRadioButton();
+		jRB_P2AlgGS = new javax.swing.JRadioButton();
 		jPanel4 = new javax.swing.JPanel();
 		jPanel5 = new javax.swing.JPanel();
 		jButton3 = new javax.swing.JButton();
@@ -314,30 +368,44 @@ public class MainWindow extends javax.swing.JFrame implements GameUndoRedoListen
 			}
 		});
 
-		jLabel1.setText("<html><b>Player 1:</b></html>");
+		jLabelP1Color.setText("<html><b>Color:</b></html>");
 
-		buttonGroup1.add(jRadioButton1);
-		jRadioButton1.setSelected(true);
-		jRadioButton1.setText("Black");
+		buttonGroupColor.add(jRB_P1ColorBlack);
+		jRB_P1ColorBlack.setSelected(true);
+		jRB_P1ColorBlack.setText("Black");
 
-		buttonGroup1.add(jRadioButton2);
-		jRadioButton2.setText("White");
+		buttonGroupColor.add(jRB_P1ColorWhite);
+		jRB_P1ColorWhite.setText("White");
 
-		jLabel2.setText("<html><b>Player 2:</b></html>");
+		jLabelP2.setText("<html><b>Player 2:</b></html>");
+		jLabelP1.setText("<html><b>Player 1:</b></html>");
 
-		buttonGroup2.add(jRadioButton3);
-		jRadioButton3.setText("Human");
+		buttonGroupP2.add(jRB_P2Human);
+		jRB_P2Human.setText("Human");
+		
+		buttonGroupP1.add(jRB_P1Human);
+		jRB_P1Human.setText("Human");
 
-		buttonGroup2.add(jRadioButton4);
-		jRadioButton4.setSelected(true);
-		jRadioButton4.setText("Computer");
-		jRadioButton4.addItemListener(new java.awt.event.ItemListener() {
+		buttonGroupP2.add(jRB_P2Comp);
+		jRB_P2Comp.setSelected(true);
+		jRB_P2Comp.setText("Computer");
+		jRB_P2Comp.addItemListener(new java.awt.event.ItemListener() {
 			public void itemStateChanged(java.awt.event.ItemEvent evt) {
-				jRadioButton4ItemStateChanged(evt);
+				jRB_P2CompItemStateChanged(evt);
+			}
+		});
+		
+		buttonGroupP1.add(jRB_P1Comp);
+		jRB_P1Comp.setSelected(true);
+		jRB_P1Comp.setText("Computer");
+		jRB_P1Comp.addItemListener(new java.awt.event.ItemListener() {
+			public void itemStateChanged(java.awt.event.ItemEvent evt) {
+				jRB_P1CompItemStateChanged(evt);
 			}
 		});
 
-		jLabel3.setText("<html><b>Evaluation method:</b></html>");
+		jLabelP2Meth.setText("<html><b>Evaluation method:</b></html>");
+		jLabelP1Meth.setText("<html><b>Evaluation method:</b></html>");
 
 		jButton2.setText("✕");
 		jButton2.addActionListener(new java.awt.event.ActionListener() {
@@ -353,52 +421,83 @@ public class MainWindow extends javax.swing.JFrame implements GameUndoRedoListen
 		jLabel5.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 		jLabel5.setOpaque(true);
 
-		javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
-		jPanel2.setLayout(jPanel2Layout);
-		jPanel2Layout.setHorizontalGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-				.addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+		javax.swing.GroupLayout jPanelNewGameLayout = new javax.swing.GroupLayout(jPanelNewGame);
+		jPanelNewGame.setLayout(jPanelNewGameLayout);
+		jPanelNewGameLayout.setHorizontalGroup(jPanelNewGameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+				.addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanelNewGameLayout.createSequentialGroup()
 						.addComponent(jLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, 727, Short.MAX_VALUE)
 						.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED).addComponent(jButton2)));
-		jPanel2Layout.setVerticalGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-				.addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+		jPanelNewGameLayout.setVerticalGroup(jPanelNewGameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+				.addGroup(jPanelNewGameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
 						.addComponent(jButton2).addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 23,
 								javax.swing.GroupLayout.PREFERRED_SIZE)));
 
-		jSpinner1.setModel(new javax.swing.SpinnerNumberModel(3, 2, 6, 1));
+		jSpinnerP2.setModel(new javax.swing.SpinnerNumberModel(3, 2, 6, 1));
+		jSpinnerP1.setModel(new javax.swing.SpinnerNumberModel(3, 2, 6, 1));
 
-		buttonGroup3.add(jRadioButton5);
-		jRadioButton5.setText("Score");
+		buttonGroupP2Meth.add(jRB_P2Meth1);
+		jRB_P2Meth1.setText("Score");
 
-		buttonGroup3.add(jRadioButton6);
-		jRadioButton6.setText("Num Sides");
+		buttonGroupP2Meth.add(jRB_P2Meth2);
+		jRB_P2Meth2.setText("Num Sides");
 
-		buttonGroup3.add(jRadioButton7);
-		jRadioButton7.setSelected(true);
-		jRadioButton7.setText("Num Corners");
+		buttonGroupP2Meth.add(jRB_P2Meth3);
+		jRB_P2Meth3.setSelected(true);
+		jRB_P2Meth3.setText("Num Corners");
 
-		jLabel4.setText("<html><b>Search tree depth :</b></html>");
+		buttonGroupP1Meth.add(jRB_P1Meth1);
+		jRB_P1Meth1.setText("Score");
 
-		jLabel7.setText("<html><b>Algorithm:</b></html>");
+		buttonGroupP1Meth.add(jRB_P1Meth2);
+		jRB_P1Meth2.setText("Num Sides");
 
-		buttonGroup4.add(jRadioButton8);
-		jRadioButton8.setText("MiniMax");
-
-		buttonGroup4.add(jRadioButton9);
-		jRadioButton9.setSelected(true);
-		jRadioButton9.setText("Alpha-Beta Pruning");
-
-		buttonGroup4.add(jRadioButton10);
-		jRadioButton10.setSelected(false);
-		jRadioButton10.setText("Random Selection");
+		buttonGroupP1Meth.add(jRB_P1Meth3);
+		jRB_P1Meth3.setSelected(true);
+		jRB_P1Meth3.setText("Num Corners");
 		
+		jLabelP2Tree.setText("<html><b>Search tree depth :</b></html>");
+		jLabelP1Tree.setText("<html><b>Search tree depth :</b></html>");
 
-		buttonGroup4.add(jRadioButton12);
-		jRadioButton12.setSelected(false);
-		jRadioButton12.setText("Iterative Deep");
+		jLabelP2Alg.setText("<html><b>Algorithm:</b></html>");
+		jLabelP1Alg.setText("<html><b>Algorithm:</b></html>");
 
-		buttonGroup4.add(jRadioButton11);
-		jRadioButton11.setSelected(false);
-		jRadioButton11.setText("Greedy Selection");
+		buttonGroupP2Alg.add(jRB_P2AlgMM);
+		jRB_P2AlgMM.setText("MiniMax");
+
+		buttonGroupP2Alg.add(jRB_P2AlgABP);
+		jRB_P2AlgABP.setSelected(true);
+		jRB_P2AlgABP.setText("Alpha-Beta Pruning");
+
+		buttonGroupP2Alg.add(jRB_P2AlgRS);
+		jRB_P2AlgRS.setSelected(false);
+		jRB_P2AlgRS.setText("Random Selection");
+		
+		buttonGroupP2Alg.add(jRB_P2AlgID);
+		jRB_P2AlgID.setSelected(false);
+		jRB_P2AlgID.setText("Iterative Deep");
+
+		buttonGroupP2Alg.add(jRB_P2AlgGS);
+		jRB_P2AlgGS.setSelected(false);
+		jRB_P2AlgGS.setText("Greedy Selection");
+		
+		buttonGroupP1Alg.add(jRB_P1AlgMM);
+		jRB_P1AlgMM.setText("MiniMax");
+
+		buttonGroupP1Alg.add(jRB_P1AlgABP);
+		jRB_P1AlgABP.setSelected(true);
+		jRB_P1AlgABP.setText("Alpha-Beta Pruning");
+
+		buttonGroupP1Alg.add(jRB_P1AlgRS);
+		jRB_P1AlgRS.setSelected(false);
+		jRB_P1AlgRS.setText("Random Selection");
+		
+		buttonGroupP1Alg.add(jRB_P1AlgID);
+		jRB_P1AlgID.setSelected(false);
+		jRB_P1AlgID.setText("Iterative Deep");
+
+		buttonGroupP1Alg.add(jRB_P1AlgGS);
+		jRB_P1AlgGS.setSelected(false);
+		jRB_P1AlgGS.setText("Greedy Selection");
 
 
 		javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
@@ -408,59 +507,99 @@ public class MainWindow extends javax.swing.JFrame implements GameUndoRedoListen
 						.addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
 								.addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
 										.addGroup(jPanel1Layout.createSequentialGroup()
-												.addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE,
+												.addComponent(jLabelP2, javax.swing.GroupLayout.PREFERRED_SIZE,
 														javax.swing.GroupLayout.DEFAULT_SIZE,
 														javax.swing.GroupLayout.PREFERRED_SIZE)
 												.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-												.addComponent(jRadioButton3)
+												.addComponent(jRB_P2Human)
 												.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-												.addComponent(jRadioButton4)
-												.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-												.addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE,
-														javax.swing.GroupLayout.DEFAULT_SIZE,
-														javax.swing.GroupLayout.PREFERRED_SIZE)
-												.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-												.addComponent(jSpinner1, javax.swing.GroupLayout.PREFERRED_SIZE,
-														javax.swing.GroupLayout.DEFAULT_SIZE,
-														javax.swing.GroupLayout.PREFERRED_SIZE))
+												.addComponent(jRB_P2Comp))
 										.addGroup(jPanel1Layout.createSequentialGroup()
-												.addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE,
+												.addComponent(jLabelP2Alg, javax.swing.GroupLayout.PREFERRED_SIZE,
 														javax.swing.GroupLayout.DEFAULT_SIZE,
 														javax.swing.GroupLayout.PREFERRED_SIZE)
 												.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-												.addComponent(jRadioButton1)
+												.addComponent(jRB_P2AlgMM)
 												.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-												.addComponent(jRadioButton2)
+												.addComponent(jRB_P2AlgABP)
 												.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-												.addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE,
-														javax.swing.GroupLayout.DEFAULT_SIZE,
-														javax.swing.GroupLayout.PREFERRED_SIZE)
+												.addComponent(jRB_P2AlgID)
 												.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-												.addComponent(jRadioButton8)
+												.addComponent(jRB_P2AlgGS)
 												.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-												.addComponent(jRadioButton9)
-												.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-												.addComponent(jRadioButton10)
-												.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-												.addComponent(jRadioButton12)
-												.addComponent(jRadioButton11))
-
+												.addComponent(jRB_P2AlgRS))
 										.addGroup(jPanel1Layout.createSequentialGroup()
-												.addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE,
+												.addComponent(jLabelP2Tree, javax.swing.GroupLayout.PREFERRED_SIZE,
 														javax.swing.GroupLayout.DEFAULT_SIZE,
 														javax.swing.GroupLayout.PREFERRED_SIZE)
 												.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-												.addComponent(jRadioButton5)
+												.addComponent(jSpinnerP2, javax.swing.GroupLayout.PREFERRED_SIZE,
+														javax.swing.GroupLayout.DEFAULT_SIZE,
+														javax.swing.GroupLayout.PREFERRED_SIZE)
+												.addGap(30)
+												.addComponent(jLabelP2Meth, javax.swing.GroupLayout.PREFERRED_SIZE,
+														javax.swing.GroupLayout.DEFAULT_SIZE,
+														javax.swing.GroupLayout.PREFERRED_SIZE)
 												.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-												.addComponent(jRadioButton6)
+												.addComponent(jRB_P2Meth1)
 												.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-												.addComponent(jRadioButton7)))
+												.addComponent(jRB_P2Meth2)
+												.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+												.addComponent(jRB_P2Meth3))
+										.addGroup(jPanel1Layout.createSequentialGroup()
+												.addComponent(jLabelP1, javax.swing.GroupLayout.PREFERRED_SIZE,
+														javax.swing.GroupLayout.DEFAULT_SIZE,
+														javax.swing.GroupLayout.PREFERRED_SIZE)
+												.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+												.addComponent(jRB_P1Human)
+												.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+												.addComponent(jRB_P1Comp)
+												.addGap(30)
+												.addComponent(jLabelP1Color, javax.swing.GroupLayout.PREFERRED_SIZE,
+														javax.swing.GroupLayout.DEFAULT_SIZE,
+														javax.swing.GroupLayout.PREFERRED_SIZE)
+												.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+												.addComponent(jRB_P1ColorBlack)
+												.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+												.addComponent(jRB_P1ColorWhite))
+										.addGroup(jPanel1Layout.createSequentialGroup()
+												.addComponent(jLabelP1Alg, javax.swing.GroupLayout.PREFERRED_SIZE,
+														javax.swing.GroupLayout.DEFAULT_SIZE,
+														javax.swing.GroupLayout.PREFERRED_SIZE)
+												.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+												.addComponent(jRB_P1AlgMM)
+												.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+												.addComponent(jRB_P1AlgABP)
+												.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+												.addComponent(jRB_P1AlgID)
+												.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+												.addComponent(jRB_P1AlgGS)
+												.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+												.addComponent(jRB_P1AlgRS))
+										.addGroup(jPanel1Layout.createSequentialGroup()
+												.addComponent(jLabelP1Tree, javax.swing.GroupLayout.PREFERRED_SIZE,
+														javax.swing.GroupLayout.DEFAULT_SIZE,
+														javax.swing.GroupLayout.PREFERRED_SIZE)
+												.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+												.addComponent(jSpinnerP1, javax.swing.GroupLayout.PREFERRED_SIZE,
+														javax.swing.GroupLayout.DEFAULT_SIZE,
+														javax.swing.GroupLayout.PREFERRED_SIZE)
+												.addGap(30)
+												.addComponent(jLabelP1Meth, javax.swing.GroupLayout.PREFERRED_SIZE,
+														javax.swing.GroupLayout.DEFAULT_SIZE,
+														javax.swing.GroupLayout.PREFERRED_SIZE)
+												.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+												.addComponent(jRB_P1Meth1)
+												.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+												.addComponent(jRB_P1Meth2)
+												.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+												.addComponent(jRB_P1Meth3)))
 								.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 231,
 										Short.MAX_VALUE)
 								.addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 84,
 										javax.swing.GroupLayout.PREFERRED_SIZE)
 								.addContainerGap())
-						.addComponent(jPanel2, javax.swing.GroupLayout.Alignment.TRAILING,
+						.addComponent(jPanelNewGame, javax.swing.GroupLayout.Alignment.TRAILING,
 								javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE,
 								Short.MAX_VALUE)
 						.addGroup(jPanel1Layout.createSequentialGroup().addContainerGap()
@@ -468,7 +607,7 @@ public class MainWindow extends javax.swing.JFrame implements GameUndoRedoListen
 								.addContainerGap()));
 		jPanel1Layout.setVerticalGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
 				.addGroup(jPanel1Layout.createSequentialGroup()
-						.addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE,
+						.addComponent(jPanelNewGame, javax.swing.GroupLayout.PREFERRED_SIZE,
 								javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
 						.addGap(12, 12, 12)
 						.addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -476,37 +615,65 @@ public class MainWindow extends javax.swing.JFrame implements GameUndoRedoListen
 								.addGroup(jPanel1Layout.createSequentialGroup()
 										.addGroup(jPanel1Layout
 												.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-												.addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE,
+												.addComponent(jLabelP1, javax.swing.GroupLayout.PREFERRED_SIZE,
 														javax.swing.GroupLayout.DEFAULT_SIZE,
 														javax.swing.GroupLayout.PREFERRED_SIZE)
-												.addComponent(jRadioButton1).addComponent(jRadioButton2)
-												.addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE,
+												.addComponent(jRB_P1Human).addComponent(jRB_P1Comp)
+												.addComponent(jLabelP1Color, javax.swing.GroupLayout.PREFERRED_SIZE,
 														javax.swing.GroupLayout.DEFAULT_SIZE,
 														javax.swing.GroupLayout.PREFERRED_SIZE)
-												.addComponent(jRadioButton8).addComponent(jRadioButton9)
-												.addComponent(jRadioButton10).addComponent(jRadioButton12)
-												.addComponent(jRadioButton10).addComponent(jRadioButton11))
+												.addComponent(jRB_P1ColorBlack).addComponent(jRB_P1ColorWhite))
 										.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
 										.addGroup(jPanel1Layout
 												.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-												.addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE,
+												.addComponent(jLabelP1Alg, javax.swing.GroupLayout.PREFERRED_SIZE,
 														javax.swing.GroupLayout.DEFAULT_SIZE,
 														javax.swing.GroupLayout.PREFERRED_SIZE)
-												.addComponent(jRadioButton3).addComponent(jRadioButton4)
-												.addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE,
-														javax.swing.GroupLayout.DEFAULT_SIZE,
-														javax.swing.GroupLayout.PREFERRED_SIZE)
-												.addComponent(jSpinner1, javax.swing.GroupLayout.PREFERRED_SIZE,
-														javax.swing.GroupLayout.DEFAULT_SIZE,
-														javax.swing.GroupLayout.PREFERRED_SIZE))
+												.addComponent(jRB_P1AlgMM).addComponent(jRB_P1AlgABP)
+												.addComponent(jRB_P1AlgID).addComponent(jRB_P1AlgGS).addComponent(jRB_P1AlgRS))
 										.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
 										.addGroup(jPanel1Layout
 												.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-												.addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE,
+												.addComponent(jLabelP1Tree, javax.swing.GroupLayout.PREFERRED_SIZE,
 														javax.swing.GroupLayout.DEFAULT_SIZE,
 														javax.swing.GroupLayout.PREFERRED_SIZE)
-												.addComponent(jRadioButton5).addComponent(jRadioButton6)
-												.addComponent(jRadioButton7))))
+												.addComponent(jSpinnerP1, javax.swing.GroupLayout.PREFERRED_SIZE,
+														javax.swing.GroupLayout.DEFAULT_SIZE,
+														javax.swing.GroupLayout.PREFERRED_SIZE)
+												.addComponent(jLabelP1Meth, javax.swing.GroupLayout.PREFERRED_SIZE,
+														javax.swing.GroupLayout.DEFAULT_SIZE,
+														javax.swing.GroupLayout.PREFERRED_SIZE)
+												.addComponent(jRB_P1Meth1).addComponent(jRB_P1Meth2)
+												.addComponent(jRB_P1Meth3))
+										.addGap(10)
+										.addGroup(jPanel1Layout
+												.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+												.addComponent(jLabelP2, javax.swing.GroupLayout.PREFERRED_SIZE,
+														javax.swing.GroupLayout.DEFAULT_SIZE,
+														javax.swing.GroupLayout.PREFERRED_SIZE)
+												.addComponent(jRB_P2Human).addComponent(jRB_P2Comp))
+										.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+										.addGroup(jPanel1Layout
+												.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+												.addComponent(jLabelP2Alg, javax.swing.GroupLayout.PREFERRED_SIZE,
+														javax.swing.GroupLayout.DEFAULT_SIZE,
+														javax.swing.GroupLayout.PREFERRED_SIZE)
+												.addComponent(jRB_P2AlgMM).addComponent(jRB_P2AlgABP)
+												.addComponent(jRB_P2AlgID).addComponent(jRB_P2AlgGS).addComponent(jRB_P2AlgRS))
+										.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+										.addGroup(jPanel1Layout
+												.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+												.addComponent(jLabelP2Tree, javax.swing.GroupLayout.PREFERRED_SIZE,
+														javax.swing.GroupLayout.DEFAULT_SIZE,
+														javax.swing.GroupLayout.PREFERRED_SIZE)
+												.addComponent(jSpinnerP2, javax.swing.GroupLayout.PREFERRED_SIZE,
+														javax.swing.GroupLayout.DEFAULT_SIZE,
+														javax.swing.GroupLayout.PREFERRED_SIZE)
+												.addComponent(jLabelP2Meth, javax.swing.GroupLayout.PREFERRED_SIZE,
+														javax.swing.GroupLayout.DEFAULT_SIZE,
+														javax.swing.GroupLayout.PREFERRED_SIZE)
+												.addComponent(jRB_P2Meth1).addComponent(jRB_P2Meth2)
+												.addComponent(jRB_P2Meth3))))
 						.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED).addComponent(jSeparator1,
 								javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
 						.addContainerGap()));
@@ -701,9 +868,13 @@ public class MainWindow extends javax.swing.JFrame implements GameUndoRedoListen
 		this.jPanel4.setVisible(this.jCheckBoxMenuItem1.isSelected());
 	}// GEN-LAST:event_jCheckBoxMenuItem1ActionPerformed
 
-	private void jRadioButton4ItemStateChanged(java.awt.event.ItemEvent evt) {// GEN-FIRST:event_jRadioButton4ItemStateChanged
-		this.setComputerAIControlsEnabled(evt.getStateChange() == ItemEvent.SELECTED);
-	}// GEN-LAST:event_jRadioButton4ItemStateChanged
+	private void jRB_P2CompItemStateChanged(java.awt.event.ItemEvent evt) {// GEN-FIRST:event_jRB_P2CompItemStateChanged
+		this.setComputerAI2ControlsEnabled(evt.getStateChange() == ItemEvent.SELECTED);
+	}// GEN-LAST:event_jRB_P2CompItemStateChanged
+	
+	private void jRB_P1CompItemStateChanged(java.awt.event.ItemEvent evt) {// GEN-FIRST:event_jRB_P2CompItemStateChanged
+		this.setComputerAI1ControlsEnabled(evt.getStateChange() == ItemEvent.SELECTED);
+	}// GEN-LAST:event_jRB_P2CompItemStateChanged
 
 	private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButton4ActionPerformed
 		this.saveGameLog();
@@ -724,22 +895,29 @@ public class MainWindow extends javax.swing.JFrame implements GameUndoRedoListen
 
 	// Variables declaration - do not modify//GEN-BEGIN:variables
 	private reversi.ui.BoardPanel boardPanel1;
-	private javax.swing.ButtonGroup buttonGroup1;
-	private javax.swing.ButtonGroup buttonGroup2;
-	private javax.swing.ButtonGroup buttonGroup3;
-	private javax.swing.ButtonGroup buttonGroup4;
+	private javax.swing.ButtonGroup buttonGroupColor;
+	private javax.swing.ButtonGroup buttonGroupP2;
+	private javax.swing.ButtonGroup buttonGroupP2Meth;
+	private javax.swing.ButtonGroup buttonGroupP2Alg;
+	private javax.swing.ButtonGroup buttonGroupP1;
+	private javax.swing.ButtonGroup buttonGroupP1Meth;
+	private javax.swing.ButtonGroup buttonGroupP1Alg;
 	private javax.swing.JButton jButton1;
 	private javax.swing.JButton jButton2;
 	private javax.swing.JButton jButton3;
 	private javax.swing.JButton jButton4;
 	private javax.swing.JCheckBoxMenuItem jCheckBoxMenuItem1;
-	private javax.swing.JLabel jLabel1;
-	private javax.swing.JLabel jLabel2;
-	private javax.swing.JLabel jLabel3;
-	private javax.swing.JLabel jLabel4;
+	private javax.swing.JLabel jLabelP1Color;
+	private javax.swing.JLabel jLabelP2;
+	private javax.swing.JLabel jLabelP2Meth;
+	private javax.swing.JLabel jLabelP2Tree;
 	private javax.swing.JLabel jLabel5;
 	private javax.swing.JLabel jLabel6;
-	private javax.swing.JLabel jLabel7;
+	private javax.swing.JLabel jLabelP2Alg;
+	private javax.swing.JLabel jLabelP1;
+	private javax.swing.JLabel jLabelP1Alg;
+	private javax.swing.JLabel jLabelP1Meth;
+	private javax.swing.JLabel jLabelP1Tree;
 	private javax.swing.JList jList1;
 	private javax.swing.JMenu jMenu1;
 	private javax.swing.JMenu jMenu2;
@@ -750,28 +928,38 @@ public class MainWindow extends javax.swing.JFrame implements GameUndoRedoListen
 	private javax.swing.JMenuItem jMenuItem3;
 	private javax.swing.JMenuItem jMenuItem4;
 	private javax.swing.JPanel jPanel1;
-	private javax.swing.JPanel jPanel2;
+	private javax.swing.JPanel jPanelNewGame;
 	private javax.swing.JPanel jPanel3;
 	private javax.swing.JPanel jPanel4;
 	private javax.swing.JPanel jPanel5;
 	private javax.swing.JPanel jPanel6;
 	private javax.swing.JPanel jPanel7;
-	private javax.swing.JRadioButton jRadioButton1;
-	private javax.swing.JRadioButton jRadioButton2;
-	private javax.swing.JRadioButton jRadioButton3;
-	private javax.swing.JRadioButton jRadioButton4;
-	private javax.swing.JRadioButton jRadioButton5;
-	private javax.swing.JRadioButton jRadioButton6;
-	private javax.swing.JRadioButton jRadioButton7;
-	private javax.swing.JRadioButton jRadioButton8;
-	private javax.swing.JRadioButton jRadioButton9;
-	private javax.swing.JRadioButton jRadioButton10;
-	private javax.swing.JRadioButton jRadioButton12;
-	private javax.swing.JRadioButton jRadioButton11;
-
+	private javax.swing.JRadioButton jRB_P1ColorBlack;
+	private javax.swing.JRadioButton jRB_P1ColorWhite;
+	private javax.swing.JRadioButton jRB_P2Human;
+	private javax.swing.JRadioButton jRB_P2Comp;
+	private javax.swing.JRadioButton jRB_P2Meth1;
+	private javax.swing.JRadioButton jRB_P2Meth2;
+	private javax.swing.JRadioButton jRB_P2Meth3;
+	private javax.swing.JRadioButton jRB_P2AlgMM;
+	private javax.swing.JRadioButton jRB_P2AlgABP;
+	private javax.swing.JRadioButton jRB_P2AlgRS;
+	private javax.swing.JRadioButton jRB_P2AlgID;
+	private javax.swing.JRadioButton jRB_P2AlgGS;
+	private javax.swing.JRadioButton jRB_P1Human;
+	private javax.swing.JRadioButton jRB_P1Comp;
+	private javax.swing.JRadioButton jRB_P1Meth1;
+	private javax.swing.JRadioButton jRB_P1Meth2;
+	private javax.swing.JRadioButton jRB_P1Meth3;
+	private javax.swing.JRadioButton jRB_P1AlgMM;
+	private javax.swing.JRadioButton jRB_P1AlgABP;
+	private javax.swing.JRadioButton jRB_P1AlgRS;
+	private javax.swing.JRadioButton jRB_P1AlgID;
+	private javax.swing.JRadioButton jRB_P1AlgGS;
 	private javax.swing.JScrollPane jScrollPane1;
 	private javax.swing.JSeparator jSeparator1;
 	private javax.swing.JPopupMenu.Separator jSeparator2;
-	private javax.swing.JSpinner jSpinner1;
+	private javax.swing.JSpinner jSpinnerP2;
+	private javax.swing.JSpinner jSpinnerP1;
 	// End of variables declaration//GEN-END:variables
 }
