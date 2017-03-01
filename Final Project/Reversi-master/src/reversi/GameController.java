@@ -35,11 +35,15 @@ public class GameController implements IdleObject {
     private Board board;
     private GameView view;
     private int player1Colour;
-    private boolean singlePlayer;
+    private boolean isP1Human;
+    private boolean isP2Human;
     private long waitFor;
-    private int maxDepth;
-    private MiniMax.SearchAlgorithm algorithm;
-    private ReversiEvaluator.EvaluationMethod evalMethod;
+    private int maxDepth1;
+    private int maxDepth2;
+    private MiniMax.SearchAlgorithm algorithm1;
+    private MiniMax.SearchAlgorithm algorithm2;
+    private ReversiEvaluator.EvaluationMethod evalMethod1;
+    private ReversiEvaluator.EvaluationMethod evalMethod2;
     private ArrayDeque<HistoryItem> history;
     private ArrayDeque<HistoryItem> future;
     private Vector<GameUndoRedoListener> gameUndoRedoListeners;
@@ -52,10 +56,11 @@ public class GameController implements IdleObject {
         this.view = null;
         this.player1Colour = this.currentPlayerColour;
         this.waitFor = Utils.WAIT_FOR_MILLIS;
-        this.maxDepth = Utils.MAX_DEPTH;
-        this.singlePlayer = true;
-        this.algorithm = MiniMax.SearchAlgorithm.ALPHA_BETA_PRUNING;
-        this.evalMethod = ReversiEvaluator.EvaluationMethod.VALID_MOVES_AND_SIDES_COUNT;
+        this.maxDepth2 = Utils.MAX_DEPTH;
+        this.isP1Human = true;
+        this.isP2Human = false;
+        this.algorithm2 = MiniMax.SearchAlgorithm.ALPHA_BETA_PRUNING;
+        this.evalMethod2 = ReversiEvaluator.EvaluationMethod.VALID_MOVES_AND_SIDES_COUNT;
 
         this.history = new ArrayDeque<HistoryItem>();
         this.future = new ArrayDeque<HistoryItem>();
@@ -73,12 +78,13 @@ public class GameController implements IdleObject {
         }
         this.currentPlayerColour = Utils.BLACK;
         this.waitFor = waitForMillis;
-        this.maxDepth = maxDepth;
+        this.maxDepth2 = maxDepth;
         this.board = null;
         this.view = null;
-        this.singlePlayer = true;
-        this.algorithm = MiniMax.SearchAlgorithm.ALPHA_BETA_PRUNING;
-        this.evalMethod = ReversiEvaluator.EvaluationMethod.VALID_MOVES_AND_SIDES_COUNT;
+        this.isP1Human = true;
+        this.isP2Human = false;
+        this.algorithm2 = MiniMax.SearchAlgorithm.ALPHA_BETA_PRUNING;
+        this.evalMethod2 = ReversiEvaluator.EvaluationMethod.VALID_MOVES_AND_SIDES_COUNT;
 
         this.history = new ArrayDeque<HistoryItem>();
         this.future = new ArrayDeque<HistoryItem>();
@@ -88,18 +94,22 @@ public class GameController implements IdleObject {
         this.gameLoggers = new Vector<GameLogger>();
     }
 
-    public GameController(boolean singlePlayer, int playerColour, Board b, GameView view, int maxDepth, MiniMax.SearchAlgorithm algorithm, ReversiEvaluator.EvaluationMethod evalMethod, long waitForMillis) {
-        if ((playerColour == Utils.BLACK) || (playerColour == Utils.WHITE)) {
-            this.player1Colour = playerColour;
+    public GameController(boolean isP1Human, boolean isP2Human, int P1Color, Board b, GameView view, int maxDepth1, int maxDepth2, MiniMax.SearchAlgorithm algorithm1, MiniMax.SearchAlgorithm algorithm2, ReversiEvaluator.EvaluationMethod evalMethod1, ReversiEvaluator.EvaluationMethod evalMethod2, long waitForMillis) {
+        if ((P1Color == Utils.BLACK) || (P1Color == Utils.WHITE)) {
+            this.player1Colour = P1Color;
         } else {
             this.player1Colour = Utils.BLACK;
         }
         this.currentPlayerColour = Utils.BLACK;
-        this.maxDepth = maxDepth;
-        this.algorithm = algorithm;
-        this.evalMethod = evalMethod;
+        this.isP1Human = isP1Human;
+        this.isP2Human = isP2Human;
+        this.maxDepth1 = maxDepth1;
+        this.maxDepth2 = maxDepth2;
+        this.algorithm1 = algorithm1;
+        this.algorithm2 = algorithm2;
+        this.evalMethod1 = evalMethod1;
+        this.evalMethod2 = evalMethod2;
         this.waitFor = waitForMillis;
-        this.singlePlayer = singlePlayer;
         this.gameUndoRedoListeners = new Vector<GameUndoRedoListener>();
         this.gameLoggers = new Vector<GameLogger>();
         this.setBoard(b);
@@ -132,19 +142,29 @@ public class GameController implements IdleObject {
 
     public void startGame() {
         notifyGameLoggers(GameLogger.GameLoggerEvent.GAME_STARTED, null);
-        if ((this.singlePlayer) && (this.player1Colour == Utils.WHITE)) {
-            this.AIStartMove();
+        if ((!this.isP1Human) && (this.player1Colour == Utils.BLACK)) {
+            this.AI1StartMove();
+        } else if ((!this.isP2Human) && (this.player1Colour == Utils.WHITE)) {
+        	this.AI2StartMove();
         }
     }
 
-    private void AIStartMove() {
+    private void AI1StartMove() {
         this.undoRedoAllowed = false;
         this.notifyGameUndoRedoListeners();
-        this.view.setAIIsPlaying(true);
+        this.view.setAI1IsPlaying(true);
         ReversiNode n = new ReversiNode(this.board.getState(), this.currentPlayerColour);
-        AIPlayer tmp = new AIPlayer(this, n, this.maxDepth, this.algorithm, this.evalMethod, this.waitFor);
+        AIPlayer tmp = new AIPlayer(this, n, this.maxDepth1, this.algorithm1, this.evalMethod1, this.waitFor);
         tmp.start();
-
+    }
+    
+    private void AI2StartMove() {
+        this.undoRedoAllowed = false;
+        this.notifyGameUndoRedoListeners();
+        this.view.setAI2IsPlaying(true);
+        ReversiNode n = new ReversiNode(this.board.getState(), this.currentPlayerColour);
+        AIPlayer tmp = new AIPlayer(this, n, this.maxDepth2, this.algorithm2, this.evalMethod2, this.waitFor);
+        tmp.start();
     }
 
     public void AIEndMove(ReversiNode n) throws InvalidMoveException {
@@ -152,7 +172,14 @@ public class GameController implements IdleObject {
         if (next != null) {
             this.play(next.getX(), next.getY());            
         }
-        this.view.setAIIsPlaying(false);
+        
+        if (this.view.getAI1IsPlaying()) {
+        	this.view.setAI1IsPlaying(false);
+        }
+        if (this.view.getAI2IsPlaying()) {
+        	this.view.setAI2IsPlaying(false);
+        }
+        
         this.undoRedoAllowed = true;
         this.notifyGameUndoRedoListeners();
     }
@@ -176,8 +203,10 @@ public class GameController implements IdleObject {
                         this.skipTurn();
                     }
 
-                    if ((this.singlePlayer) && (this.currentPlayerColour != player1Colour)&&(!this.board.isTheGameOver())) {
-                        this.AIStartMove();
+                    if ((!this.isP1Human) && (this.currentPlayerColour == player1Colour)&&(!this.board.isTheGameOver())) {
+                        this.AI1StartMove();
+                    } else if ((!this.isP2Human) && (this.currentPlayerColour != player1Colour)&&(!this.board.isTheGameOver())) {
+                        this.AI2StartMove();
                     }
 
                 } catch (InvalidMoveException ime) {
