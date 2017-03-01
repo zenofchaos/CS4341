@@ -71,7 +71,8 @@ public class BoardPanel extends JPanel implements BoardListener, GameView, Mouse
     private Point highlightedSquare;
     private int currentPlayerColour;
     private boolean drawValidMoves;
-    private boolean AIIsPlaying;
+    private boolean AI1IsPlaying;
+    private boolean AI2IsPlaying;
     private boolean playerHasNoValidMoves;
     private String playerWithNoMoves;
     private long lastClickTime;
@@ -87,7 +88,8 @@ public class BoardPanel extends JPanel implements BoardListener, GameView, Mouse
         this.highlightedSquare = null;
 
         this.drawValidMoves = true;
-        this.AIIsPlaying = false;
+        this.AI1IsPlaying = false;
+        this.AI2IsPlaying = false;
         this.playerHasNoValidMoves = false;
         this.playerWithNoMoves = "";
 
@@ -121,8 +123,12 @@ public class BoardPanel extends JPanel implements BoardListener, GameView, Mouse
         this.drawValidMoves = drawValidMoves;
     }
 
-    public void setAIIsPlaying(boolean AIIsPlaying) {
-        this.AIIsPlaying = AIIsPlaying;
+    public void setAI1IsPlaying(boolean AI1IsPlaying) {
+        this.AI1IsPlaying = AI1IsPlaying;
+    }
+    
+    public void setAI2IsPlaying(boolean AI2IsPlaying) {
+        this.AI2IsPlaying = AI2IsPlaying;
     }
 
     public void setPlayerHasNoMovesAvailable(boolean playerHasNoValidMoves, String player) {
@@ -130,10 +136,14 @@ public class BoardPanel extends JPanel implements BoardListener, GameView, Mouse
         this.playerWithNoMoves = player;
     }
 
-    public boolean getAIIsPlaying() {
-        return this.AIIsPlaying;
+    public boolean getAI1IsPlaying() {
+        return this.AI1IsPlaying;
     }
 
+    public boolean getAI2IsPlaying() {
+        return this.AI2IsPlaying;
+    }
+    
     public void setBoard(Board b) {
         if (this.board != null) {
             this.board.removeView(this);
@@ -210,7 +220,7 @@ public class BoardPanel extends JPanel implements BoardListener, GameView, Mouse
             if (this.board.isTheGameOver()) {
                 drawGameOver(g2d, this.gameArea);
             } else {
-                if (this.AIIsPlaying) {
+                if (this.AI1IsPlaying || this.AI2IsPlaying) {
                     this.drawAIIsPlaying(g2d, width, height);
                 }
             }
@@ -428,6 +438,7 @@ public class BoardPanel extends JPanel implements BoardListener, GameView, Mouse
 
     }
 
+    // TODO: May be something wrong here with AI1IsPlaying
     private void highlightSquare(int i, int j, Graphics2D g2d, int rectLeft, int rectTop, int rectDimension) {
         double squareDimension = rectDimension / 8;
         double x = rectLeft + i * squareDimension + 2;
@@ -438,7 +449,7 @@ public class BoardPanel extends JPanel implements BoardListener, GameView, Mouse
         if (this.board != null) {
             Vector<Move> moves = this.board.getValidMoves(this.currentPlayerColour);
             Move m = new Move(i, j, this.currentPlayerColour);
-            if ((moves.contains(m)) && (!this.AIIsPlaying)) {
+            if ((moves.contains(m)) && (!this.AI1IsPlaying) && (!this.AI2IsPlaying)) {
                 g2d.setPaint(this.highlightColor);
             }
         }
@@ -517,6 +528,7 @@ public class BoardPanel extends JPanel implements BoardListener, GameView, Mouse
     }
     // </editor-fold>
 
+    // TODO: May be some problems here with AI1IsPlaying
     // <editor-fold defaultstate="collapsed" desc=" MouseListener Implementation ">
     public void mouseClicked(MouseEvent e) {
 
@@ -525,7 +537,7 @@ public class BoardPanel extends JPanel implements BoardListener, GameView, Mouse
         if (diff > 1000) {
             this.lastClickTime = currentTime;
             if (e.getClickCount() == 1 && e.getButton() == MouseEvent.BUTTON1) {
-                if ((this.gameArea != null) && (!this.AIIsPlaying) && (!this.playerHasNoValidMoves)) {
+                if ((this.gameArea != null) && (!this.AI1IsPlaying) && (!this.AI2IsPlaying) && (!this.playerHasNoValidMoves)) {
                     Point square = getSquareUnderCursor(e.getX(), e.getY(), this.gameArea.x, this.gameArea.y, this.gameArea.width);
                     if ((this.controller != null) && (square != null)) {
                         this.controller.play(square.x, square.y);
