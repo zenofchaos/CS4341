@@ -27,6 +27,7 @@ import java.util.Vector;
 import ai.MiniMax;
 import reversi.ai.ReversiEvaluator;
 import reversi.exceptions.InvalidMoveException;
+import reversi.ui.MainWindow;
 import reversi.ai.ReversiNode;
 
 public class GameController implements IdleObject {
@@ -49,6 +50,7 @@ public class GameController implements IdleObject {
     private Vector<GameUndoRedoListener> gameUndoRedoListeners;
     private boolean undoRedoAllowed;
     private Vector<GameLogger> gameLoggers;
+    private MainWindow mainWindow;
 
     public GameController() {
         this.currentPlayerColour = Utils.BLACK;
@@ -94,8 +96,9 @@ public class GameController implements IdleObject {
         this.gameLoggers = new Vector<GameLogger>();
     }
 
-    public GameController(boolean isP1Human, boolean isP2Human, int P1Color, Board b, GameView view, int maxDepth1, int maxDepth2, MiniMax.SearchAlgorithm algorithm1, MiniMax.SearchAlgorithm algorithm2, ReversiEvaluator.EvaluationMethod evalMethod1, ReversiEvaluator.EvaluationMethod evalMethod2, long waitForMillis) {
-        if ((P1Color == Utils.BLACK) || (P1Color == Utils.WHITE)) {
+    public GameController(MainWindow mw, boolean isP1Human, boolean isP2Human, int P1Color, Board b, GameView view, int maxDepth1, int maxDepth2, MiniMax.SearchAlgorithm algorithm1, MiniMax.SearchAlgorithm algorithm2, ReversiEvaluator.EvaluationMethod evalMethod1, ReversiEvaluator.EvaluationMethod evalMethod2, long waitForMillis) {
+        this.mainWindow = mw;
+    	if ((P1Color == Utils.BLACK) || (P1Color == Utils.WHITE)) {
             this.player1Colour = P1Color;
         } else {
             this.player1Colour = Utils.BLACK;
@@ -213,6 +216,13 @@ public class GameController implements IdleObject {
                     System.err.println(ime.toString());
                 }
             }
+            if (this.board.isTheGameOver() && mainWindow.getAutomate()) {
+            	mainWindow.automateNext();
+            	mainWindow.getjPanel1().setVisible(false);
+            	if (mainWindow.getAutomate()) {
+        			mainWindow.newGame();
+            	}
+            }
         }
     }
 
@@ -229,6 +239,11 @@ public class GameController implements IdleObject {
         this.view.setPlayerHasNoMovesAvailable(false, "");
         this.changePlayer();
         this.view.notifyGameChanged(this);
+        if ((!this.isP1Human) && (this.player1Colour == Utils.BLACK)) {
+            this.AI1StartMove();
+        } else if ((!this.isP2Human) && (this.player1Colour == Utils.WHITE)) {
+        	this.AI2StartMove();
+        }
     }
 
     private void showNoMovesAlert(String playerName) {
@@ -304,7 +319,8 @@ public class GameController implements IdleObject {
             if (evt.equals(GameLogger.GameLoggerEvent.GAME_STARTED)) {
                 gameLogger.newGameStarted();
             } else if (evt.equals(GameLogger.GameLoggerEvent.GAME_OVER)) {
-                gameLogger.gameOver();
+                System.out.println("game over");
+            	gameLogger.gameOver();
             } else if (evt.equals(GameLogger.GameLoggerEvent.NEW_MOVE)) {
                 gameLogger.newMove((Move) param);
             } else if (evt.equals(GameLogger.GameLoggerEvent.UNDO)) {

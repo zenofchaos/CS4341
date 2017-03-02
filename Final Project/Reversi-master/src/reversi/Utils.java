@@ -29,7 +29,7 @@ public class Utils {
     public static final int WHITE = -1;
     public static final int EMPTY = 0;
     public static final int MAX_DEPTH = 4;
-    public static final long WAIT_FOR_MILLIS = 250;
+    public static final long WAIT_FOR_MILLIS = 50;
 
     public static int getOpponentsColour(int colour) {
         if (colour == Utils.BLACK) {
