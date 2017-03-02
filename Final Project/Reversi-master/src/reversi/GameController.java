@@ -314,23 +314,22 @@ public class GameController implements IdleObject {
 
     private void notifyGameLoggers(GameLogger.GameLoggerEvent evt, Object param) {
 
-        for (Iterator<GameLogger> it = gameLoggers.iterator(); it.hasNext();) {
-            GameLogger gameLogger = it.next();
-            if (evt.equals(GameLogger.GameLoggerEvent.GAME_STARTED)) {
-                gameLogger.newGameStarted();
-            } else if (evt.equals(GameLogger.GameLoggerEvent.GAME_OVER)) {
-                System.out.println("game over");
-            	gameLogger.gameOver();
-            } else if (evt.equals(GameLogger.GameLoggerEvent.NEW_MOVE)) {
-                gameLogger.newMove((Move) param);
-            } else if (evt.equals(GameLogger.GameLoggerEvent.UNDO)) {
-                gameLogger.moveUndone();
-            } else {
-                gameLogger.moveRedone();
-            }
-        }
+		for (Iterator<GameLogger> it = gameLoggers.iterator(); it.hasNext();) {
+			GameLogger gameLogger = it.next();
+			if (evt.equals(GameLogger.GameLoggerEvent.GAME_STARTED)) {
+				gameLogger.newGameStarted();
+			} else if (evt.equals(GameLogger.GameLoggerEvent.GAME_OVER)) {
+				gameLogger.gameOver();
+			} else if (evt.equals(GameLogger.GameLoggerEvent.NEW_MOVE)) {
+				gameLogger.newMove((Move) param);
+			} else if (evt.equals(GameLogger.GameLoggerEvent.UNDO)) {
+				gameLogger.moveUndone();
+			} else {
+				gameLogger.moveRedone();
+			}
+		}
 
-    }
+	}
 
     private void printHistory() {
         for (Iterator<HistoryItem> it = history.iterator(); it.hasNext();) {
@@ -339,3 +338,4 @@ public class GameController implements IdleObject {
         }
     }
 }
+

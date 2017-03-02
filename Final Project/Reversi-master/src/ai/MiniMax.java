@@ -22,24 +22,23 @@
 package ai;
 
 import java.util.ArrayDeque;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.Random;
+import java.util.Timer;
 import java.util.Vector;
 
 import ai.Node.NodeType;
 
 public class MiniMax {
-	 static int seconds; 
-	 static Timer timer = new Timer();
-	
+	static int seconds;
+	static Timer timer = new Timer();
+
 	public enum SearchAlgorithm {
 
 		RANDOM_SEARCH, MINIMAX, ALPHA_BETA_PRUNING, ITERATIVE_DEEP, GREEDY_SEARCH
 	}
 
 	public void apply(Node n, int maxDepth, SearchAlgorithm algorithm, Evaluator eval) {
-		
+
 		if (algorithm == SearchAlgorithm.MINIMAX) {
 			minimax(n, maxDepth, eval);
 		} else if (algorithm == SearchAlgorithm.ALPHA_BETA_PRUNING) {
@@ -47,21 +46,22 @@ public class MiniMax {
 		} else if (algorithm == SearchAlgorithm.RANDOM_SEARCH) {
 			randomSearch(n);
 		} else if( algorithm == SearchAlgorithm.ITERATIVE_DEEP){
+			//iterativeDeep(n, maxDepth, eval, 2000);
 			// TODO SUPER HAKZ
-			//iterativeDeep(n,maxDepth,eval,10);
 			randomSearch(n);
 		} else if (algorithm == SearchAlgorithm.GREEDY_SEARCH){
 			greedySearch(n,eval);
-
+		} else if (algorithm == SearchAlgorithm.ITERATIVE_DEEP) {
+			
 		}
 	}
-	
-	//Randomly chooses moves
+
+	// Randomly chooses moves
 	private void randomSearch(Node n) {
-		
+
 		Vector<Node> children = n.getChildren();
 		if (children.size() == 0) {
-			//no possible moves
+			// no possible moves
 			return;
 		}
 		int random_index = new Random().nextInt(children.size());
@@ -69,27 +69,27 @@ public class MiniMax {
 		Move next_move = next_node.getMoveLeadingHere();
 		n.setNextMove(next_move);
 	}
-	
-	//Chooses the move which increases the score (based on evaluation method) the most
-	private void greedySearch(Node n, Evaluator eval){
+
+	// Chooses the move which increases the score (based on evaluation method)
+	// the most
+	private void greedySearch(Node n, Evaluator eval) {
 		if (n.isEndGameNode()) {
 			System.out.println("H1");
 			return;
 		}
 		Vector<Node> children = n.getChildren();
 		if (children.size() == 0) {
-			//no possible moves
+			// no possible moves
 			return;
 		}
 		int maxVal = eval.evaluate(children.get(0));
 		Vector<Node> choices = new Vector<Node>(children.size());
 		choices.add(children.get(0));
-		for (int i = 1; i < children.size(); i++){
-			if (maxVal < eval.evaluate(children.get(i))){
+		for (int i = 1; i < children.size(); i++) {
+			if (maxVal < eval.evaluate(children.get(i))) {
 				choices.removeAllElements();
 				choices.add(children.get(i));
-			}
-			else if (maxVal == eval.evaluate(children.get(i))){
+			} else if (maxVal == eval.evaluate(children.get(i))) {
 				choices.add(children.get(i));
 			}
 		}
@@ -151,7 +151,10 @@ public class MiniMax {
 		ArrayDeque<Node> searchStack = new ArrayDeque<Node>();
 		searchStack.push(n);
 
+		System.out.println(maxDepth);
 		while (searchStack.isEmpty() == false) {
+			System.out.println("ITERATING IN THE SEARCH STACK");
+
 			Node node = searchStack.pop();
 
 			Move nextMove = node.getNextMove();
@@ -211,35 +214,25 @@ public class MiniMax {
 				}
 			}
 
-			node.setVisited(true);
+			// node.setVisited(true);
 			// print(node);
 		}
 	}
 
-	// Iterative deepening function. Is time based instead of 
-	private void iterativeDeep(Node n, int maxDepth, Evaluator eval, int time) {
-	     TimerTask task;
-	    final int timeLimit = time;
-	    final Node passN = n;
-	    final Evaluator passE = eval;
-	    
-	     task = new TimerTask() {
-	         @Override
-	         public void run() { 
-	             if (seconds < timeLimit) {
-	                 System.out.println("Seconds = " + seconds);
-	                 seconds++;
-	             } else {
-	                 // stop the timer
-	                 cancel();
-	             }
-	         }
-	     };
-	         timer.schedule(task, 0, 1000);
+	// Iterative deepening function. Is time based instead of
+	private void iterativeDeep(Node n, int maxDepth, Evaluator eval, int time_limit) {
 
-	     
+		long startTime = System.currentTimeMillis();
+
+		int i = 1;
+
+		while ((System.currentTimeMillis() - startTime) <= time_limit) {
+			this.alphaBetaPruning(n, i, eval);
+			i++;
+		}
+
 	}
-	
+
 	private void print(Node n) {
 		System.out.println(n.toString());
 	}
