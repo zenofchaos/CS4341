@@ -222,15 +222,22 @@ public class MiniMax {
 
 		long startTime = System.currentTimeMillis();
 
+		Node temp = deepClone(n);
+		
 		int i = 1;
 
 		while ((System.currentTimeMillis() - startTime) <= time_limit) {
-			this.alphaBetaPruning(n, i, eval);
+			this.alphaBetaPruning(temp, i, eval);
 			i++;
 		}
 
 	}
 
+	
+	public Node deepClone(Node n){
+		return n.Gclone(n);
+	}
+	
 	private void print(Node n) {
 		System.out.println(n.toString());
 	}
