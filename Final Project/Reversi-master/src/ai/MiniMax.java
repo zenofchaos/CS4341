@@ -27,6 +27,7 @@ import java.util.Timer;
 import java.util.Vector;
 
 import ai.Node.NodeType;
+import reversi.ai.ReversiNode;
 
 public class MiniMax {
 	static int seconds;
@@ -45,14 +46,10 @@ public class MiniMax {
 			alphaBetaPruning(n, maxDepth, eval);
 		} else if (algorithm == SearchAlgorithm.RANDOM_SEARCH) {
 			randomSearch(n);
-		} else if( algorithm == SearchAlgorithm.ITERATIVE_DEEP){
-			//iterativeDeep(n, maxDepth, eval, 2000);
-			// TODO SUPER HAKZ
-			randomSearch(n);
-		} else if (algorithm == SearchAlgorithm.GREEDY_SEARCH){
-			greedySearch(n,eval);
+		} else if (algorithm == SearchAlgorithm.GREEDY_SEARCH) {
+			greedySearch(n, eval);
 		} else if (algorithm == SearchAlgorithm.ITERATIVE_DEEP) {
-			
+			iterativeDeep(n, eval, 1000);
 		}
 	}
 
@@ -151,9 +148,7 @@ public class MiniMax {
 		ArrayDeque<Node> searchStack = new ArrayDeque<Node>();
 		searchStack.push(n);
 
-		System.out.println(maxDepth);
 		while (searchStack.isEmpty() == false) {
-			System.out.println("ITERATING IN THE SEARCH STACK");
 
 			Node node = searchStack.pop();
 
@@ -220,16 +215,31 @@ public class MiniMax {
 	}
 
 	// Iterative deepening function. Is time based instead of
-	private void iterativeDeep(Node n, int maxDepth, Evaluator eval, int time_limit) {
+	private void iterativeDeep(Node n, Evaluator eval, int time_limit) {
 
 		long startTime = System.currentTimeMillis();
 
 		int i = 1;
+		ReversiNode temp = new ReversiNode(((ReversiNode) n).getState(), ((ReversiNode) n).getCurrentPlayer());
+		ReversiNode temp2 = new ReversiNode(((ReversiNode) n).getState(), ((ReversiNode) n).getCurrentPlayer());
 
 		while ((System.currentTimeMillis() - startTime) <= time_limit) {
-			this.alphaBetaPruning(n, i, eval);
+
+			temp2 = new ReversiNode(((ReversiNode) temp).getState(), ((ReversiNode) temp).getCurrentPlayer());
+			long startTrackTime = System.currentTimeMillis();
+			this.alphaBetaPruning(temp2, i, eval);
+			long endTrackTime = System.currentTimeMillis();
+			long difference = endTrackTime - startTrackTime;
+
+			System.out.println("Difference: " + difference + " Time Remaining: "
+					+ (time_limit - (System.currentTimeMillis() - startTime)));
+			if (3 * difference >= time_limit - (System.currentTimeMillis() - startTime)) {
+				break;
+			}
 			i++;
 		}
+
+		this.alphaBetaPruning(n, i, eval);
 
 	}
 
