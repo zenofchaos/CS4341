@@ -38,7 +38,6 @@ public class MiniMax {
 	}
 
 	public void apply(Node n, int maxDepth, SearchAlgorithm algorithm, Evaluator eval) {
-		// System.out.println("Algorithm = " + algorithm);
 
 		if (algorithm == SearchAlgorithm.MINIMAX) {
 			minimax(n, maxDepth, eval);
@@ -46,11 +45,14 @@ public class MiniMax {
 			alphaBetaPruning(n, maxDepth, eval);
 		} else if (algorithm == SearchAlgorithm.RANDOM_SEARCH) {
 			randomSearch(n);
+		} else if( algorithm == SearchAlgorithm.ITERATIVE_DEEP){
+			//iterativeDeep(n, maxDepth, eval, 2000);
+			// TODO SUPER HAKZ
+			randomSearch(n);
+		} else if (algorithm == SearchAlgorithm.GREEDY_SEARCH){
+			greedySearch(n,eval);
 		} else if (algorithm == SearchAlgorithm.ITERATIVE_DEEP) {
-			iterativeDeep(n, maxDepth, eval, 2000);
-		} else if (algorithm == SearchAlgorithm.GREEDY_SEARCH) {
-			greedySearch(n, eval);
-
+			
 		}
 	}
 

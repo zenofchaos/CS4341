@@ -23,15 +23,24 @@ package reversi.ui;
 
 import java.awt.event.ItemEvent;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.ArrayDeque;
+import java.util.List;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JFileChooser;
+import javax.swing.JLabel;
+import javax.swing.JRadioButton;
 import javax.swing.UIManager;
+
+import com.opencsv.CSVReader;
+import com.opencsv.CSVWriter;
 
 import ai.MiniMax;
 import reversi.Board;
@@ -47,6 +56,15 @@ public class MainWindow extends javax.swing.JFrame implements GameUndoRedoListen
 	private GameController gameController;
 	private DefaultListModel gamelogListModel;
 	private ArrayDeque<String> redoMessages;
+	private JRadioButton[] P1AlgButtons = new JRadioButton[5];
+	private JRadioButton[] P2AlgButtons = new JRadioButton[5];
+	private JRadioButton[] P1MethButtons = new JRadioButton[3];
+	private JRadioButton[] P2MethButtons = new JRadioButton[3];
+	private int i = 0, j = 0, m = 0, n = 0;
+	private boolean automate = false;
+	private BoardPanel boardPanel2;
+	private MiniMax.SearchAlgorithm algorithm2;
+	private MiniMax.SearchAlgorithm algorithm1;
 
 	/** Creates new form MainWindow */
 	public MainWindow() {
@@ -71,7 +89,7 @@ public class MainWindow extends javax.swing.JFrame implements GameUndoRedoListen
 		this.updateUndoRedoControls();
 	}
 
-	private void newGame() {
+	public void newGame() {
 
 		this.redoMessages.clear();
 
@@ -116,9 +134,6 @@ public class MainWindow extends javax.swing.JFrame implements GameUndoRedoListen
 			evalMethod1 = EvaluationMethod.VALID_MOVES_AND_CORNERS;
 		}
 
-		MiniMax.SearchAlgorithm algorithm2;
-		MiniMax.SearchAlgorithm algorithm1;
-
 		if (this.jRB_P2AlgMM.isSelected()) {
 			algorithm2 = MiniMax.SearchAlgorithm.MINIMAX;
 		} else if (this.jRB_P2AlgABP.isSelected()) {
@@ -142,19 +157,94 @@ public class MainWindow extends javax.swing.JFrame implements GameUndoRedoListen
 		} else {
 			algorithm1 = MiniMax.SearchAlgorithm.GREEDY_SEARCH;
 		}
-
+		System.out.println("Algorithm 1 = " + algorithm1);
+		System.out.println("Algorithm 2 = " + algorithm2);
 		updateUndoRedoControls();
 
 		this.jPanel7.removeAll();
-		BoardPanel boardPanel = new BoardPanel();
-		this.jPanel7.add(boardPanel);
-		this.gameController = new GameController(isP1Human, isP2Human, P1Color, new Board(), boardPanel, 
+		boardPanel2 = new BoardPanel();
+		this.jPanel7.add(boardPanel2);
+		this.gameController = new GameController(this, isP1Human, isP2Human, P1Color, new Board(), boardPanel2, 
 				d1, d2, algorithm1, algorithm2, evalMethod1, evalMethod2, Utils.WAIT_FOR_MILLIS);
 		this.gameController.addGameUndoRedoListener(this);
 		this.gameController.addGameLogger(this);
 		this.gameController.startGame();
 	}
 
+	public void automateNext() {
+		//record data
+		String filePath = "C:\\Users\\Monika\\git\\CS4341\\Final Project\\Reversi-master\\analysis.csv";
+		try {
+				String score = "" + this.boardPanel2.getBoard().getScore().x;
+				System.out.println(score);
+				this.updateCSV(filePath, score, i*3+j+3, n*3+m+3);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		m++;
+		if (m == 3) {
+			m = 0;
+			n++;
+		}
+		if (n == 5) {
+			n = 0;
+			j++;
+		}
+		if (j == 3) {
+			j = 0;
+			i++;
+		}
+		if (i == 5) {
+			i = 0;
+			this.automate = false;
+		}
+		
+		
+		this.jPanel1.setVisible(true);
+		if (this.automate) { 
+			P1AlgButtons[i].setSelected(true);
+			P1MethButtons[j].setSelected(true);
+			P2AlgButtons[n].setSelected(true);
+			P2MethButtons[m].setSelected(true);
+		} else {
+			jPanel1.setVisible(false);
+			i = 0;
+			j = 0;
+			m = 0;
+			n = 0;
+		}
+		
+	}
+	
+	/**
+	 * Update CSV by row and column
+	 * 
+	 * @param fileToUpdate CSV file path to update e.g. D:\\chetan\\test.csv
+	 * @param replace Replacement for your cell value
+	 * @param row Row for which need to update 
+	 * @param col Column for which you need to update
+	 * @throws IOException
+	 */
+	public static void updateCSV(String fileToUpdate, String replace,
+	    int row, int col) throws IOException {
+
+		File inputFile = new File(fileToUpdate);
+
+		// Read existing file 
+		CSVReader reader = new CSVReader(new FileReader(inputFile), ',');
+		List<String[]> csvBody = reader.readAll();
+		// get CSV row column  and replace with by using row and column
+		csvBody.get(row)[col] = replace;
+		reader.close();
+
+		// Write to CSV file which is open
+		CSVWriter writer = new CSVWriter(new FileWriter(inputFile), ',');
+		writer.writeAll(csvBody);
+		writer.flush();
+		writer.close();
+	}
+	
 	private void undo() {
 		if (this.gameController != null) {
 			this.gameController.undo();
@@ -355,6 +445,7 @@ public class MainWindow extends javax.swing.JFrame implements GameUndoRedoListen
 		jMenuItem4 = new javax.swing.JMenuItem();
 		jMenu3 = new javax.swing.JMenu();
 		jCheckBoxMenuItem1 = new javax.swing.JCheckBoxMenuItem();
+		automateButt = new javax.swing.JButton();
 
 		setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 		setTitle("Reversi");
@@ -370,6 +461,33 @@ public class MainWindow extends javax.swing.JFrame implements GameUndoRedoListen
 
 		jLabelP1Color.setText("<html><b>Color:</b></html>");
 
+		automateButt.setText("Automate");
+		automateButt.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				automateButtActionPerformed(evt);
+			}
+		});
+		
+		P1AlgButtons[0] = jRB_P1AlgMM;
+		P1AlgButtons[1] = jRB_P1AlgABP;
+		P1AlgButtons[2] = jRB_P1AlgID;
+		P1AlgButtons[3] = jRB_P1AlgGS;
+		P1AlgButtons[4] = jRB_P1AlgRS;
+		
+		P2AlgButtons[0] = jRB_P2AlgMM;
+		P2AlgButtons[1] = jRB_P2AlgABP;
+		P2AlgButtons[2] = jRB_P2AlgID;
+		P2AlgButtons[3] = jRB_P2AlgGS;
+		P2AlgButtons[4] = jRB_P2AlgRS;
+		
+		P1MethButtons[0] = jRB_P1Meth1;
+		P1MethButtons[1] = jRB_P1Meth2;
+		P1MethButtons[2] = jRB_P1Meth3;
+		
+		P2MethButtons[0] = jRB_P2Meth1;
+		P2MethButtons[1] = jRB_P2Meth2;
+		P2MethButtons[2] = jRB_P2Meth3;
+		
 		buttonGroupColor.add(jRB_P1ColorBlack);
 		jRB_P1ColorBlack.setSelected(true);
 		jRB_P1ColorBlack.setText("Black");
@@ -596,6 +714,8 @@ public class MainWindow extends javax.swing.JFrame implements GameUndoRedoListen
 												.addComponent(jRB_P1Meth3)))
 								.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 231,
 										Short.MAX_VALUE)
+								.addComponent(automateButt, javax.swing.GroupLayout.PREFERRED_SIZE, 84,
+										javax.swing.GroupLayout.PREFERRED_SIZE)
 								.addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 84,
 										javax.swing.GroupLayout.PREFERRED_SIZE)
 								.addContainerGap())
@@ -611,6 +731,7 @@ public class MainWindow extends javax.swing.JFrame implements GameUndoRedoListen
 								javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
 						.addGap(12, 12, 12)
 						.addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+								.addComponent(automateButt, javax.swing.GroupLayout.DEFAULT_SIZE, 80, Short.MAX_VALUE)
 								.addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, 80, Short.MAX_VALUE)
 								.addGroup(jPanel1Layout.createSequentialGroup()
 										.addGroup(jPanel1Layout
@@ -842,6 +963,16 @@ public class MainWindow extends javax.swing.JFrame implements GameUndoRedoListen
 		this.jPanel1.setVisible(false);
 		this.newGame();
 	}// GEN-LAST:event_jButton1ActionPerformed
+	
+	private void automateButtActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_automateButtActionPerformed
+		P1AlgButtons[0].setSelected(true);
+		P2AlgButtons[0].setSelected(true);
+		P1MethButtons[0].setSelected(true);
+		P2MethButtons[0].setSelected(true);
+		this.automate = true;
+		this.jPanel1.setVisible(false);
+		this.newGame();
+	}// GEN-LAST:event_automateButtActionPerformed
 
 	private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jMenuItem2ActionPerformed
 		System.exit(0);
@@ -879,6 +1010,126 @@ public class MainWindow extends javax.swing.JFrame implements GameUndoRedoListen
 	private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButton4ActionPerformed
 		this.saveGameLog();
 	}// GEN-LAST:event_jButton4ActionPerformed
+
+	public boolean getAutomate() {
+		return automate;
+	}
+	
+	public void setAutomate(boolean auto) {
+		this.automate = auto;
+	}
+	
+	public JRadioButton[] getP1AlgButtons() {
+		return P1AlgButtons;
+	}
+
+	public void setP1AlgButtons(JRadioButton[] p1AlgButtons) {
+		P1AlgButtons = p1AlgButtons;
+	}
+
+	public JRadioButton[] getP2AlgButtons() {
+		return P2AlgButtons;
+	}
+
+	public void setP2AlgButtons(JRadioButton[] p2AlgButtons) {
+		P2AlgButtons = p2AlgButtons;
+	}
+
+	public JRadioButton[] getP1MethButtons() {
+		return P1MethButtons;
+	}
+
+	public void setP1MethButtons(JRadioButton[] p1MethButtons) {
+		P1MethButtons = p1MethButtons;
+	}
+
+	public JRadioButton[] getP2MethButtons() {
+		return P2MethButtons;
+	}
+
+	public void setP2MethButtons(JRadioButton[] p2MethButtons) {
+		P2MethButtons = p2MethButtons;
+	}
+
+	public javax.swing.JPanel getjPanel1() {
+		return jPanel1;
+	}
+
+	public void setjPanel1(javax.swing.JPanel jPanel1) {
+		this.jPanel1 = jPanel1;
+	}
+
+	public int getI() {
+		return i;
+	}
+
+	public void setI(int i) {
+		this.i = i;
+	}
+
+	public int getJ() {
+		return j;
+	}
+
+	public void setJ(int j) {
+		this.j = j;
+	}
+
+	public int getN() {
+		return n;
+	}
+
+	public void setN(int n) {
+		this.n = n;
+	}
+
+	public int getM() {
+		return m;
+	}
+
+	public void setM(int m) {
+		this.m = m;
+	}
+
+	public MiniMax.SearchAlgorithm getAlgorithm1() {
+		return algorithm1;
+	}
+
+	public void setAlgorithm1(MiniMax.SearchAlgorithm algorithm1) {
+		this.algorithm1 = algorithm1;
+	}
+
+	public MiniMax.SearchAlgorithm getAlgorithm2() {
+		return algorithm2;
+	}
+
+	public void setAlgorithm2(MiniMax.SearchAlgorithm algorithm2) {
+		this.algorithm2 = algorithm2;
+	}
+
+	public javax.swing.JRadioButton getjRB_P1AlgRS() {
+		return jRB_P1AlgRS;
+	}
+
+	public void setjRB_P1AlgRS(javax.swing.JRadioButton jRB_P1AlgRS) {
+		this.jRB_P1AlgRS = jRB_P1AlgRS;
+	}
+
+	public javax.swing.JRadioButton getjRB_P1AlgMM() {
+		return jRB_P1AlgMM;
+	}
+
+	public void setjRB_P1AlgMM(javax.swing.JRadioButton jRB_P1AlgMM) {
+		this.jRB_P1AlgMM = jRB_P1AlgMM;
+	}
+
+	public javax.swing.JRadioButton getjRB_P2AlgRS() {
+		return jRB_P2AlgRS;
+	}
+
+	public void setjRB_P2AlgRS(javax.swing.JRadioButton jRB_P2AlgRS) {
+		this.jRB_P2AlgRS = jRB_P2AlgRS;
+	}
 
 	/**
 	 * @param args
@@ -956,6 +1207,7 @@ public class MainWindow extends javax.swing.JFrame implements GameUndoRedoListen
 	private javax.swing.JRadioButton jRB_P1AlgRS;
 	private javax.swing.JRadioButton jRB_P1AlgID;
 	private javax.swing.JRadioButton jRB_P1AlgGS;
+	private javax.swing.JButton automateButt;
 	private javax.swing.JScrollPane jScrollPane1;
 	private javax.swing.JSeparator jSeparator1;
 	private javax.swing.JPopupMenu.Separator jSeparator2;
