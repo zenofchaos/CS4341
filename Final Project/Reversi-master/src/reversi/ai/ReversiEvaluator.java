@@ -33,7 +33,7 @@ import reversi.Utils;
 public class ReversiEvaluator extends Evaluator{
 
     public enum EvaluationMethod {
-        VALID_MOVES_AND_TOTAL_SCORE, VALID_MOVES_AND_SIDES_COUNT, VALID_MOVES_AND_CORNERS
+        VALID_MOVES_AND_TOTAL_SCORE, VALID_MOVES_AND_SIDES_COUNT, VALID_MOVES_AND_CORNERS, UTIL_FUNCTION
     }
 
      private int player;
@@ -71,8 +71,10 @@ public class ReversiEvaluator extends Evaluator{
             value = validMovesCount(s, player) + totalScore(s, player);
         } else if (evalMethod == EvaluationMethod.VALID_MOVES_AND_SIDES_COUNT) {
             value = validMovesCount(s, player)+ sidesCount(s, player);
-        } else {
+        } else if (evalMethod == EvaluationMethod.VALID_MOVES_AND_CORNERS){
             value = validMovesCount(s, player) + cornerCount(s, player)*100;
+        } else{
+        	value = validMovesCount(s, player) + totalScore(s, player) + 20*sidesCount(s, player) + 100*cornerCount(s, player);
         }
 
         //value = validMovesCount(s, player) + cornerCount(s, player)*100;
