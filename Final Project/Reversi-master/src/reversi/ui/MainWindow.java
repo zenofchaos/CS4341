@@ -58,8 +58,8 @@ public class MainWindow extends javax.swing.JFrame implements GameUndoRedoListen
 	private ArrayDeque<String> redoMessages;
 	private JRadioButton[] P1AlgButtons = new JRadioButton[5];
 	private JRadioButton[] P2AlgButtons = new JRadioButton[5];
-	private JRadioButton[] P1MethButtons = new JRadioButton[3];
-	private JRadioButton[] P2MethButtons = new JRadioButton[3];
+	private JRadioButton[] P1MethButtons = new JRadioButton[4];
+	private JRadioButton[] P2MethButtons = new JRadioButton[4];
 	private int i = 0, j = 0, m = 0, n = 0;
 	private boolean automate = false;
 	private BoardPanel boardPanel2;
@@ -122,16 +122,20 @@ public class MainWindow extends javax.swing.JFrame implements GameUndoRedoListen
 			evalMethod2 = EvaluationMethod.VALID_MOVES_AND_TOTAL_SCORE;
 		} else if (this.jRB_P2Meth2.isSelected()) {
 			evalMethod2 = EvaluationMethod.VALID_MOVES_AND_SIDES_COUNT;
-		} else {
+		} else if (this.jRB_P2Meth3.isSelected()) {
 			evalMethod2 = EvaluationMethod.VALID_MOVES_AND_CORNERS;
+		} else {
+			evalMethod2 = EvaluationMethod.UTIL_FUNCTION;
 		}
 		
 		if (this.jRB_P1Meth1.isSelected()) {
 			evalMethod1 = EvaluationMethod.VALID_MOVES_AND_TOTAL_SCORE;
 		} else if (this.jRB_P1Meth2.isSelected()) {
 			evalMethod1 = EvaluationMethod.VALID_MOVES_AND_SIDES_COUNT;
-		} else {
+		} else  if (this.jRB_P1Meth3.isSelected()) {
 			evalMethod1 = EvaluationMethod.VALID_MOVES_AND_CORNERS;
+		} else {
+			evalMethod1 = EvaluationMethod.UTIL_FUNCTION;
 		}
 
 		if (this.jRB_P2AlgMM.isSelected()) {
@@ -173,29 +177,29 @@ public class MainWindow extends javax.swing.JFrame implements GameUndoRedoListen
 
 	public void automateNext() {
 		//record data
-		String filePath = "C:\\Users\\Monika\\git\\CS4341\\Final Project\\Reversi-master\\analysis.csv";
+		String filePath = "analysis.csv";
 		try {
 				String score = "" + this.boardPanel2.getBoard().getScore().x;
 				System.out.println(score);
-				this.updateCSV(filePath, score, i*3+j+3, n*3+m+3);
+				this.updateCSV(filePath, score, i*4+j+3, n*4+m+3);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		m++;
-		if (m == 3) {
+		if (m == 1) {
 			m = 0;
 			n++;
 		}
-		if (n == 5) {
+		if (n == 2) {
 			n = 0;
 			j++;
 		}
-		if (j == 3) {
+		if (j == 1) {
 			j = 0;
 			i++;
 		}
-		if (i == 5) {
+		if (i == 2) {
 			i = 0;
 			this.automate = false;
 		}
@@ -383,6 +387,7 @@ public class MainWindow extends javax.swing.JFrame implements GameUndoRedoListen
 		jRB_P1Meth1 = new javax.swing.JRadioButton();
 		jRB_P1Meth2 = new javax.swing.JRadioButton();
 		jRB_P1Meth3 = new javax.swing.JRadioButton();
+		jRB_P1Meth4 = new javax.swing.JRadioButton();
 		jRB_P1AlgMM = new javax.swing.JRadioButton();
 		jRB_P1AlgABP = new javax.swing.JRadioButton();
 		jRB_P1AlgRS = new javax.swing.JRadioButton();
@@ -419,6 +424,7 @@ public class MainWindow extends javax.swing.JFrame implements GameUndoRedoListen
 		jRB_P2Meth1 = new javax.swing.JRadioButton();
 		jRB_P2Meth2 = new javax.swing.JRadioButton();
 		jRB_P2Meth3 = new javax.swing.JRadioButton();
+		jRB_P2Meth4 = new javax.swing.JRadioButton();
 		jLabelP2Tree = new javax.swing.JLabel();
 		jLabelP2Alg = new javax.swing.JLabel();
 		jRB_P2AlgMM = new javax.swing.JRadioButton();
@@ -483,10 +489,12 @@ public class MainWindow extends javax.swing.JFrame implements GameUndoRedoListen
 		P1MethButtons[0] = jRB_P1Meth1;
 		P1MethButtons[1] = jRB_P1Meth2;
 		P1MethButtons[2] = jRB_P1Meth3;
+		P1MethButtons[3] = jRB_P1Meth4;
 		
 		P2MethButtons[0] = jRB_P2Meth1;
 		P2MethButtons[1] = jRB_P2Meth2;
 		P2MethButtons[2] = jRB_P2Meth3;
+		P2MethButtons[3] = jRB_P2Meth4;
 		
 		buttonGroupColor.add(jRB_P1ColorBlack);
 		jRB_P1ColorBlack.setSelected(true);
@@ -562,6 +570,9 @@ public class MainWindow extends javax.swing.JFrame implements GameUndoRedoListen
 		buttonGroupP2Meth.add(jRB_P2Meth3);
 		jRB_P2Meth3.setSelected(true);
 		jRB_P2Meth3.setText("Num Corners");
+		
+		buttonGroupP2Meth.add(jRB_P2Meth4);
+		jRB_P2Meth4.setText("Utility Function");
 
 		buttonGroupP1Meth.add(jRB_P1Meth1);
 		jRB_P1Meth1.setText("Score");
@@ -572,6 +583,9 @@ public class MainWindow extends javax.swing.JFrame implements GameUndoRedoListen
 		buttonGroupP1Meth.add(jRB_P1Meth3);
 		jRB_P1Meth3.setSelected(true);
 		jRB_P1Meth3.setText("Num Corners");
+		
+		buttonGroupP1Meth.add(jRB_P1Meth4);
+		jRB_P1Meth4.setText("Utility Function");
 		
 		jLabelP2Tree.setText("<html><b>Search tree depth :</b></html>");
 		jLabelP1Tree.setText("<html><b>Search tree depth :</b></html>");
@@ -663,7 +677,9 @@ public class MainWindow extends javax.swing.JFrame implements GameUndoRedoListen
 												.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
 												.addComponent(jRB_P2Meth2)
 												.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-												.addComponent(jRB_P2Meth3))
+												.addComponent(jRB_P2Meth3)
+												.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+												.addComponent(jRB_P2Meth4))
 										.addGroup(jPanel1Layout.createSequentialGroup()
 												.addComponent(jLabelP1, javax.swing.GroupLayout.PREFERRED_SIZE,
 														javax.swing.GroupLayout.DEFAULT_SIZE,
@@ -711,7 +727,9 @@ public class MainWindow extends javax.swing.JFrame implements GameUndoRedoListen
 												.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
 												.addComponent(jRB_P1Meth2)
 												.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-												.addComponent(jRB_P1Meth3)))
+												.addComponent(jRB_P1Meth3)
+												.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+												.addComponent(jRB_P1Meth4)))
 								.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 231,
 										Short.MAX_VALUE)
 								.addComponent(automateButt, javax.swing.GroupLayout.PREFERRED_SIZE, 84,
@@ -765,7 +783,7 @@ public class MainWindow extends javax.swing.JFrame implements GameUndoRedoListen
 														javax.swing.GroupLayout.DEFAULT_SIZE,
 														javax.swing.GroupLayout.PREFERRED_SIZE)
 												.addComponent(jRB_P1Meth1).addComponent(jRB_P1Meth2)
-												.addComponent(jRB_P1Meth3))
+												.addComponent(jRB_P1Meth3).addComponent(jRB_P1Meth4))
 										.addGap(10)
 										.addGroup(jPanel1Layout
 												.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -794,7 +812,7 @@ public class MainWindow extends javax.swing.JFrame implements GameUndoRedoListen
 														javax.swing.GroupLayout.DEFAULT_SIZE,
 														javax.swing.GroupLayout.PREFERRED_SIZE)
 												.addComponent(jRB_P2Meth1).addComponent(jRB_P2Meth2)
-												.addComponent(jRB_P2Meth3))))
+												.addComponent(jRB_P2Meth3).addComponent(jRB_P2Meth4))))
 						.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED).addComponent(jSeparator1,
 								javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
 						.addContainerGap()));
@@ -1192,6 +1210,7 @@ public class MainWindow extends javax.swing.JFrame implements GameUndoRedoListen
 	private javax.swing.JRadioButton jRB_P2Meth1;
 	private javax.swing.JRadioButton jRB_P2Meth2;
 	private javax.swing.JRadioButton jRB_P2Meth3;
+	private javax.swing.JRadioButton jRB_P2Meth4;
 	private javax.swing.JRadioButton jRB_P2AlgMM;
 	private javax.swing.JRadioButton jRB_P2AlgABP;
 	private javax.swing.JRadioButton jRB_P2AlgRS;
@@ -1202,6 +1221,7 @@ public class MainWindow extends javax.swing.JFrame implements GameUndoRedoListen
 	private javax.swing.JRadioButton jRB_P1Meth1;
 	private javax.swing.JRadioButton jRB_P1Meth2;
 	private javax.swing.JRadioButton jRB_P1Meth3;
+	private javax.swing.JRadioButton jRB_P1Meth4;
 	private javax.swing.JRadioButton jRB_P1AlgMM;
 	private javax.swing.JRadioButton jRB_P1AlgABP;
 	private javax.swing.JRadioButton jRB_P1AlgRS;
