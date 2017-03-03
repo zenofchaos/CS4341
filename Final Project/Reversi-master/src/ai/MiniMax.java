@@ -49,7 +49,7 @@ public class MiniMax {
 		} else if (algorithm == SearchAlgorithm.GREEDY_SEARCH) {
 			greedySearch(n, eval);
 		} else if (algorithm == SearchAlgorithm.ITERATIVE_DEEP) {
-			iterativeDeep(n, eval, 1000);
+			iterativeDeep(n, eval, 5000);
 		}
 	}
 
@@ -236,11 +236,16 @@ public class MiniMax {
 			if (3 * difference >= time_limit - (System.currentTimeMillis() - startTime)) {
 				break;
 			}
+
 			i++;
 		}
 
-		this.alphaBetaPruning(n, i, eval);
+		n.Gclone(temp2);
 
+	}
+
+	public Node deepClone(Node n) {
+		return n.Gclone(n);
 	}
 
 	private void print(Node n) {

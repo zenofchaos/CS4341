@@ -29,28 +29,48 @@ public abstract class Node {
 
         MAX, MIN
     }
-    private boolean visited;
-    private boolean expanded;
-    private Node parent;
-    private Vector<Node> children;
-    private int nextChildIndex;
-    private Move moveLeadingHere;
-    private Move nextMove;
-    private int currentPlayer;
-    private NodeType type;
-    private int depth;
-    private Integer value;
+    public boolean visited;
+    public boolean expanded;
+    public Node parent;
+    public Vector<Node> children;
+    public int nextChildIndex;
+    public Move moveLeadingHere;
+    public Move nextMove;
+    public int currentPlayer;
+    public NodeType type;
+    public int depth;
+    public Integer value;
     public static long NextNodeId;
-    private long nodeId;
+    public long nodeId;
 
     public Node() {
         init(null, null);
     }
-
+    
+    public Node Gclone(Node m){
+     	
+    	this.setVisited(m.hasBeenVisited());
+    	this.setExpanded(m.hasBeenExpanded());
+    	this.setParent(m.getParent());
+    	this.children = m.children;
+    	this.nextChildIndex = m.nextChildIndex;
+    	this.moveLeadingHere = m.moveLeadingHere;
+    	this.nextMove = m.nextMove;
+    	this.currentPlayer = m.currentPlayer;
+    	this.type = m.type;
+    	this.depth = m.depth;
+    	this.value = m.value;
+    	this.NextNodeId = m.NextNodeId;
+    	this.nodeId = m.nodeId;
+    	
+    	return this;
+    }
+    
     public Node(Node parent, Move m) {
         init(parent, m);
     }
 
+   
     private void init(Node parent, Move m) {
         this.setParent(parent);
         if (parent == null) {
