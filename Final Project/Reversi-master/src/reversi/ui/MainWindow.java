@@ -35,7 +35,6 @@ import java.util.List;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JFileChooser;
-import javax.swing.JLabel;
 import javax.swing.JRadioButton;
 import javax.swing.UIManager;
 
@@ -106,15 +105,15 @@ public class MainWindow extends javax.swing.JFrame implements GameUndoRedoListen
 		} else {
 			P1Color = Utils.WHITE;
 		}
-		
+
 		boolean isP1Human;
 		isP1Human = this.jRB_P1Human.isSelected();
 		boolean isP2Human;
 		isP2Human = this.jRB_P2Human.isSelected();
-		
+
 		int d2 = (Integer) this.jSpinnerP2.getModel().getValue();
 		int d1 = (Integer) this.jSpinnerP1.getModel().getValue();
-		
+
 		EvaluationMethod evalMethod2;
 		EvaluationMethod evalMethod1;
 
@@ -125,7 +124,7 @@ public class MainWindow extends javax.swing.JFrame implements GameUndoRedoListen
 		} else {
 			evalMethod2 = EvaluationMethod.VALID_MOVES_AND_CORNERS;
 		}
-		
+
 		if (this.jRB_P1Meth1.isSelected()) {
 			evalMethod1 = EvaluationMethod.VALID_MOVES_AND_TOTAL_SCORE;
 		} else if (this.jRB_P1Meth2.isSelected()) {
@@ -145,7 +144,7 @@ public class MainWindow extends javax.swing.JFrame implements GameUndoRedoListen
 		} else {
 			algorithm2 = MiniMax.SearchAlgorithm.GREEDY_SEARCH;
 		}
-		
+
 		if (this.jRB_P1AlgMM.isSelected()) {
 			algorithm1 = MiniMax.SearchAlgorithm.MINIMAX;
 		} else if (this.jRB_P1AlgABP.isSelected()) {
@@ -164,24 +163,24 @@ public class MainWindow extends javax.swing.JFrame implements GameUndoRedoListen
 		this.jPanel7.removeAll();
 		boardPanel2 = new BoardPanel();
 		this.jPanel7.add(boardPanel2);
-		this.gameController = new GameController(this, isP1Human, isP2Human, P1Color, new Board(), boardPanel2, 
-				d1, d2, algorithm1, algorithm2, evalMethod1, evalMethod2, Utils.WAIT_FOR_MILLIS);
+		this.gameController = new GameController(this, isP1Human, isP2Human, P1Color, new Board(), boardPanel2, d1, d2,
+				algorithm1, algorithm2, evalMethod1, evalMethod2, Utils.WAIT_FOR_MILLIS);
 		this.gameController.addGameUndoRedoListener(this);
 		this.gameController.addGameLogger(this);
 		this.gameController.startGame();
 	}
 
 	public void automateNext() {
-		//record data
-		String filePath = "C:\\Users\\Monika\\git\\CS4341\\Final Project\\Reversi-master\\analysis.csv";
+		// record data
+		String filePath = "C:\\Users\\Thomas Lourenco\\Desktop\\CS4341\\Final Project\\Reversi-master\\analysis.csv";
 		try {
-				String score = "" + this.boardPanel2.getBoard().getScore().x;
-				System.out.println(score);
-				this.updateCSV(filePath, score, i*3+j+3, n*3+m+3);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			String score = "" + this.boardPanel2.getBoard().getScore().x;
+			System.out.println(score);
+			this.updateCSV(filePath, score, i * 3 + j + 3, n * 3 + m + 3);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		m++;
 		if (m == 3) {
 			m = 0;
@@ -199,10 +198,9 @@ public class MainWindow extends javax.swing.JFrame implements GameUndoRedoListen
 			i = 0;
 			this.automate = false;
 		}
-		
-		
+
 		this.jPanel1.setVisible(true);
-		if (this.automate) { 
+		if (this.automate) {
 			P1AlgButtons[i].setSelected(true);
 			P1MethButtons[j].setSelected(true);
 			P2AlgButtons[n].setSelected(true);
@@ -214,27 +212,30 @@ public class MainWindow extends javax.swing.JFrame implements GameUndoRedoListen
 			m = 0;
 			n = 0;
 		}
-		
+
 	}
-	
+
 	/**
 	 * Update CSV by row and column
 	 * 
-	 * @param fileToUpdate CSV file path to update e.g. D:\\chetan\\test.csv
-	 * @param replace Replacement for your cell value
-	 * @param row Row for which need to update 
-	 * @param col Column for which you need to update
+	 * @param fileToUpdate
+	 *            CSV file path to update e.g. D:\\chetan\\test.csv
+	 * @param replace
+	 *            Replacement for your cell value
+	 * @param row
+	 *            Row for which need to update
+	 * @param col
+	 *            Column for which you need to update
 	 * @throws IOException
 	 */
-	public static void updateCSV(String fileToUpdate, String replace,
-	    int row, int col) throws IOException {
+	public static void updateCSV(String fileToUpdate, String replace, int row, int col) throws IOException {
 
 		File inputFile = new File(fileToUpdate);
 
-		// Read existing file 
+		// Read existing file
 		CSVReader reader = new CSVReader(new FileReader(inputFile), ',');
 		List<String[]> csvBody = reader.readAll();
-		// get CSV row column  and replace with by using row and column
+		// get CSV row column and replace with by using row and column
 		csvBody.get(row)[col] = replace;
 		reader.close();
 
@@ -244,7 +245,7 @@ public class MainWindow extends javax.swing.JFrame implements GameUndoRedoListen
 		writer.flush();
 		writer.close();
 	}
-	
+
 	private void undo() {
 		if (this.gameController != null) {
 			this.gameController.undo();
@@ -285,7 +286,7 @@ public class MainWindow extends javax.swing.JFrame implements GameUndoRedoListen
 		this.jRB_P1AlgGS.setEnabled(enabled);
 		this.jSpinnerP1.setEnabled(enabled);
 	}
-	
+
 	private void setComputerAI2ControlsEnabled(boolean enabled) {
 		this.jLabelP2Meth.setEnabled(enabled);
 		this.jLabelP2Tree.setEnabled(enabled);
@@ -377,7 +378,7 @@ public class MainWindow extends javax.swing.JFrame implements GameUndoRedoListen
 	// <editor-fold defaultstate="collapsed" desc="Generated
 	// Code">//GEN-BEGIN:initComponents
 	private void initComponents() {
-		
+
 		jRB_P1Human = new javax.swing.JRadioButton();
 		jRB_P1Comp = new javax.swing.JRadioButton();
 		jRB_P1Meth1 = new javax.swing.JRadioButton();
@@ -467,27 +468,27 @@ public class MainWindow extends javax.swing.JFrame implements GameUndoRedoListen
 				automateButtActionPerformed(evt);
 			}
 		});
-		
+
 		P1AlgButtons[0] = jRB_P1AlgMM;
 		P1AlgButtons[1] = jRB_P1AlgABP;
 		P1AlgButtons[2] = jRB_P1AlgID;
 		P1AlgButtons[3] = jRB_P1AlgGS;
 		P1AlgButtons[4] = jRB_P1AlgRS;
-		
+
 		P2AlgButtons[0] = jRB_P2AlgMM;
 		P2AlgButtons[1] = jRB_P2AlgABP;
 		P2AlgButtons[2] = jRB_P2AlgID;
 		P2AlgButtons[3] = jRB_P2AlgGS;
 		P2AlgButtons[4] = jRB_P2AlgRS;
-		
+
 		P1MethButtons[0] = jRB_P1Meth1;
 		P1MethButtons[1] = jRB_P1Meth2;
 		P1MethButtons[2] = jRB_P1Meth3;
-		
+
 		P2MethButtons[0] = jRB_P2Meth1;
 		P2MethButtons[1] = jRB_P2Meth2;
 		P2MethButtons[2] = jRB_P2Meth3;
-		
+
 		buttonGroupColor.add(jRB_P1ColorBlack);
 		jRB_P1ColorBlack.setSelected(true);
 		jRB_P1ColorBlack.setText("Black");
@@ -500,7 +501,7 @@ public class MainWindow extends javax.swing.JFrame implements GameUndoRedoListen
 
 		buttonGroupP2.add(jRB_P2Human);
 		jRB_P2Human.setText("Human");
-		
+
 		buttonGroupP1.add(jRB_P1Human);
 		jRB_P1Human.setText("Human");
 
@@ -512,7 +513,7 @@ public class MainWindow extends javax.swing.JFrame implements GameUndoRedoListen
 				jRB_P2CompItemStateChanged(evt);
 			}
 		});
-		
+
 		buttonGroupP1.add(jRB_P1Comp);
 		jRB_P1Comp.setSelected(true);
 		jRB_P1Comp.setText("Computer");
@@ -541,14 +542,16 @@ public class MainWindow extends javax.swing.JFrame implements GameUndoRedoListen
 
 		javax.swing.GroupLayout jPanelNewGameLayout = new javax.swing.GroupLayout(jPanelNewGame);
 		jPanelNewGame.setLayout(jPanelNewGameLayout);
-		jPanelNewGameLayout.setHorizontalGroup(jPanelNewGameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+		jPanelNewGameLayout.setHorizontalGroup(jPanelNewGameLayout
+				.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
 				.addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanelNewGameLayout.createSequentialGroup()
 						.addComponent(jLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, 727, Short.MAX_VALUE)
 						.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED).addComponent(jButton2)));
-		jPanelNewGameLayout.setVerticalGroup(jPanelNewGameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-				.addGroup(jPanelNewGameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-						.addComponent(jButton2).addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 23,
-								javax.swing.GroupLayout.PREFERRED_SIZE)));
+		jPanelNewGameLayout
+				.setVerticalGroup(jPanelNewGameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+						.addGroup(jPanelNewGameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+								.addComponent(jButton2).addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE,
+										23, javax.swing.GroupLayout.PREFERRED_SIZE)));
 
 		jSpinnerP2.setModel(new javax.swing.SpinnerNumberModel(3, 2, 6, 1));
 		jSpinnerP1.setModel(new javax.swing.SpinnerNumberModel(3, 2, 6, 1));
@@ -572,7 +575,7 @@ public class MainWindow extends javax.swing.JFrame implements GameUndoRedoListen
 		buttonGroupP1Meth.add(jRB_P1Meth3);
 		jRB_P1Meth3.setSelected(true);
 		jRB_P1Meth3.setText("Num Corners");
-		
+
 		jLabelP2Tree.setText("<html><b>Search tree depth :</b></html>");
 		jLabelP1Tree.setText("<html><b>Search tree depth :</b></html>");
 
@@ -589,7 +592,7 @@ public class MainWindow extends javax.swing.JFrame implements GameUndoRedoListen
 		buttonGroupP2Alg.add(jRB_P2AlgRS);
 		jRB_P2AlgRS.setSelected(false);
 		jRB_P2AlgRS.setText("Random Selection");
-		
+
 		buttonGroupP2Alg.add(jRB_P2AlgID);
 		jRB_P2AlgID.setSelected(false);
 		jRB_P2AlgID.setText("Iterative Deep");
@@ -597,7 +600,7 @@ public class MainWindow extends javax.swing.JFrame implements GameUndoRedoListen
 		buttonGroupP2Alg.add(jRB_P2AlgGS);
 		jRB_P2AlgGS.setSelected(false);
 		jRB_P2AlgGS.setText("Greedy Selection");
-		
+
 		buttonGroupP1Alg.add(jRB_P1AlgMM);
 		jRB_P1AlgMM.setText("MiniMax");
 
@@ -608,7 +611,7 @@ public class MainWindow extends javax.swing.JFrame implements GameUndoRedoListen
 		buttonGroupP1Alg.add(jRB_P1AlgRS);
 		jRB_P1AlgRS.setSelected(false);
 		jRB_P1AlgRS.setText("Random Selection");
-		
+
 		buttonGroupP1Alg.add(jRB_P1AlgID);
 		jRB_P1AlgID.setSelected(false);
 		jRB_P1AlgID.setText("Iterative Deep");
@@ -616,7 +619,6 @@ public class MainWindow extends javax.swing.JFrame implements GameUndoRedoListen
 		buttonGroupP1Alg.add(jRB_P1AlgGS);
 		jRB_P1AlgGS.setSelected(false);
 		jRB_P1AlgGS.setText("Greedy Selection");
-
 
 		javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
 		jPanel1.setLayout(jPanel1Layout);
@@ -671,8 +673,7 @@ public class MainWindow extends javax.swing.JFrame implements GameUndoRedoListen
 												.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
 												.addComponent(jRB_P1Human)
 												.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-												.addComponent(jRB_P1Comp)
-												.addGap(30)
+												.addComponent(jRB_P1Comp).addGap(30)
 												.addComponent(jLabelP1Color, javax.swing.GroupLayout.PREFERRED_SIZE,
 														javax.swing.GroupLayout.DEFAULT_SIZE,
 														javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -751,7 +752,8 @@ public class MainWindow extends javax.swing.JFrame implements GameUndoRedoListen
 														javax.swing.GroupLayout.DEFAULT_SIZE,
 														javax.swing.GroupLayout.PREFERRED_SIZE)
 												.addComponent(jRB_P1AlgMM).addComponent(jRB_P1AlgABP)
-												.addComponent(jRB_P1AlgID).addComponent(jRB_P1AlgGS).addComponent(jRB_P1AlgRS))
+												.addComponent(jRB_P1AlgID).addComponent(jRB_P1AlgGS)
+												.addComponent(jRB_P1AlgRS))
 										.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
 										.addGroup(jPanel1Layout
 												.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -780,13 +782,13 @@ public class MainWindow extends javax.swing.JFrame implements GameUndoRedoListen
 														javax.swing.GroupLayout.DEFAULT_SIZE,
 														javax.swing.GroupLayout.PREFERRED_SIZE)
 												.addComponent(jRB_P2AlgMM).addComponent(jRB_P2AlgABP)
-												.addComponent(jRB_P2AlgID).addComponent(jRB_P2AlgGS).addComponent(jRB_P2AlgRS))
+												.addComponent(jRB_P2AlgID).addComponent(jRB_P2AlgGS)
+												.addComponent(jRB_P2AlgRS))
 										.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
 										.addGroup(jPanel1Layout
 												.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
 												.addComponent(jLabelP2Tree, javax.swing.GroupLayout.PREFERRED_SIZE,
-														javax.swing.GroupLayout.DEFAULT_SIZE,
-														javax.swing.GroupLayout.PREFERRED_SIZE)
+														javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
 												.addComponent(jSpinnerP2, javax.swing.GroupLayout.PREFERRED_SIZE,
 														javax.swing.GroupLayout.DEFAULT_SIZE,
 														javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -963,7 +965,7 @@ public class MainWindow extends javax.swing.JFrame implements GameUndoRedoListen
 		this.jPanel1.setVisible(false);
 		this.newGame();
 	}// GEN-LAST:event_jButton1ActionPerformed
-	
+
 	private void automateButtActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_automateButtActionPerformed
 		P1AlgButtons[0].setSelected(true);
 		P2AlgButtons[0].setSelected(true);
@@ -1002,7 +1004,7 @@ public class MainWindow extends javax.swing.JFrame implements GameUndoRedoListen
 	private void jRB_P2CompItemStateChanged(java.awt.event.ItemEvent evt) {// GEN-FIRST:event_jRB_P2CompItemStateChanged
 		this.setComputerAI2ControlsEnabled(evt.getStateChange() == ItemEvent.SELECTED);
 	}// GEN-LAST:event_jRB_P2CompItemStateChanged
-	
+
 	private void jRB_P1CompItemStateChanged(java.awt.event.ItemEvent evt) {// GEN-FIRST:event_jRB_P2CompItemStateChanged
 		this.setComputerAI1ControlsEnabled(evt.getStateChange() == ItemEvent.SELECTED);
 	}// GEN-LAST:event_jRB_P2CompItemStateChanged
@@ -1014,11 +1016,11 @@ public class MainWindow extends javax.swing.JFrame implements GameUndoRedoListen
 	public boolean getAutomate() {
 		return automate;
 	}
-	
+
 	public void setAutomate(boolean auto) {
 		this.automate = auto;
 	}
-	
+
 	public JRadioButton[] getP1AlgButtons() {
 		return P1AlgButtons;
 	}

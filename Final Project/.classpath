@@ -2,5 +2,6 @@
 <classpath>
 	<classpathentry kind="src" path="Reversi-master/src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="Reversi-master/lib/opencsv-3.9.jar"/>
 	<classpathentry kind="output" path="Reversi-master/bin"/>
 </classpath>

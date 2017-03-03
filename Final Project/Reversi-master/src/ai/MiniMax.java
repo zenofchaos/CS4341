@@ -49,7 +49,7 @@ public class MiniMax {
 		} else if (algorithm == SearchAlgorithm.GREEDY_SEARCH) {
 			greedySearch(n, eval);
 		} else if (algorithm == SearchAlgorithm.ITERATIVE_DEEP) {
-			iterativeDeep(n, eval, 5000);
+			iterativeDeep(n, eval, 2000);
 		}
 	}
 
